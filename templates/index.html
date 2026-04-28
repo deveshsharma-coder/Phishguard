@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishGuard - Phishing Detection Trainer</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g: #00ff88; --gd: #00cc6a; --gg: rgba(0,255,136,.12);
+  --r: #ff3c5a; --rg: rgba(255,60,90,.1);
+  --y: #ffaa00; --yg: rgba(255,170,0,.1);
+  --b: #0084ff; --bg2: rgba(0,132,255,.12);
+  --bg: #07090f; --bgc: #0c1220; --bgp: #101827;
+  --br: #1a2840; --brb: #243658;
+  --tx: #c0d0e8; --txd: #4a6080;
+  --mono: "Share Tech Mono", monospace;
+  --disp: "Rajdhani", sans-serif;
+  --sans: "Inter", sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:var(--sans);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.02) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:0}
+.z1{position:relative;z-index:1}
+@keyframes blink{50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.4)}50%{box-shadow:0 0 0 8px rgba(0,255,136,0)}}
+@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes burstScale{from{transform:scale(0);opacity:1}to{transform:scale(2.5);opacity:0}}
+@keyframes firework{0%{transform:scale(0);opacity:1}100%{transform:scale(1.8);opacity:0}}
+@keyframes streakPop{0%{opacity:0;transform:scale(.5) translateY(-10px)}50%{opacity:1;transform:scale(1.2) translateY(-20px)}100%{opacity:0;transform:scale(.8) translateY(-40px)}}
+
+/* ── HEADER ── */
+.hdr{position:sticky;top:0;z-index:200;background:rgba(7,9,15,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--br)}
+.hdr-in{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ico{width:38px;height:38px;background:var(--gg);border:1px solid rgba(0,255,136,.4);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 16px rgba(0,255,136,.2)}
+.logo-name{font-family:var(--disp);font-size:20px;font-weight:700;color:var(--g);letter-spacing:3px}
+.logo-tag{font-family:var(--mono);font-size:9px;color:var(--txd);letter-spacing:2px;margin-top:1px}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--g);margin-left:1px;vertical-align:middle;animation:blink 1s step-start infinite}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav-pill{font-family:var(--mono);font-size:11px;color:var(--txd);padding:5px 14px;border:1px solid var(--br);border-radius:20px;cursor:pointer;background:transparent;text-decoration:none;transition:all .2s}
+.nav-pill:hover,.nav-pill.active{color:var(--g);border-color:var(--g);background:var(--gg);text-decoration:none}
+.user-btn{font-family:var(--mono);font-size:12px;padding:6px 16px;border-radius:20px;border:1px solid var(--g);background:var(--gg);color:var(--g);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+.user-btn:hover{background:var(--g);color:var(--bg)}
+
+/* ── TAB NAV ── */
+.tabnav{background:var(--bgc);border-bottom:1px solid var(--br);position:sticky;top:62px;z-index:190}
+.tabnav-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.tabnav-in::-webkit-scrollbar{height:3px}
+.tabnav-in::-webkit-scrollbar-thumb{background:var(--brb)}
+.tabtrig{font-family:var(--mono);font-size:12px;padding:14px 22px;color:var(--txd);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:7px}
+.tabtrig:hover{color:var(--tx)}
+.tabtrig.on{color:var(--g);border-bottom-color:var(--g)}
+
+/* ── SECTION PANES ── */
+.pane{display:none;padding:32px 24px;max-width:1200px;margin:0 auto}
+.pane.on{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--bgc);border:1px solid var(--br);border-radius:14px;overflow:hidden;position:relative}
+.card-top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.card-pad{padding:28px}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:8px}
+.card-head-title{font-family:var(--mono);font-size:11px;color:var(--txd);letter-spacing:2px;text-transform:uppercase}
+
+/* ── FORM ELEMENTS ── */
+.flabel{font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:7px;display:block}
+.fgroup{margin-bottom:20px}
+.finput{width:100%;background:var(--bgp);border:1px solid var(--brb);color:#fff;padding:11px 14px;border-radius:8px;font-family:var(--mono);font-size:13px;outline:none;transition:all .2s}
+.finput:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(0,255,136,.08)}
+.finput::placeholder{color:var(--txd)}
+.finput-area{resize:vertical;min-height:110px}
+.ferr{color:var(--r);font-family:var(--mono);font-size:11px;margin-top:5px;display:none}
+.fsuccess{color:var(--g);font-family:var(--mono);font-size:11px;margin-top:5px;display:none}
+
+/* ── BUTTONS ── */
+.btn-g{padding:12px 28px;background:var(--g);color:var(--bg);border:none;border-radius:8px;font-family:var(--disp);font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;box-shadow:0 4px 18px rgba(0,255,136,.25)}
+.btn-g:hover{background:#00ffaa;box-shadow:0 6px 26px rgba(0,255,136,.45);transform:translateY(-1px)}
+.btn-g:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-r{padding:12px 28px;background:rgba(255,60,90,.1);color:var(--r);border:1px solid var(--r);border-radius:8px;font-family:var(--disp);font-size:16px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-r:hover{background:var(--r);color:#fff}
+.btn-ghost{padding:9px 20px;background:transparent;color:var(--txd);border:1px solid var(--br);border-radius:8px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{border-color:var(--g);color:var(--g)}
+.btn-sm{padding:7px 16px;font-size:13px}
+.btn-full{width:100%}
+
+/* ── CHIPS / BADGES ── */
+.chip{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:20px;font-weight:600;letter-spacing:1px;display:inline-block}
+.chip-email{background:var(--bg2);color:#5cb8ff;border:1px solid rgba(0,132,255,.3)}
+.chip-sms{background:var(--gg);color:var(--g);border:1px solid rgba(0,255,136,.25)}
+.chip-wa{background:rgba(150,80,255,.12);color:#b87fff;border:1px solid rgba(150,80,255,.3)}
+.chip-easy{background:var(--gg);color:var(--g);border:1px solid rgba(0,255,136,.2)}
+.chip-med{background:var(--yg);color:var(--y);border:1px solid rgba(255,170,0,.2)}
+.chip-hard{background:var(--rg);color:var(--r);border:1px solid rgba(255,60,90,.2)}
+
+/* ── LOADER ── */
+.loader{display:inline-block;width:20px;height:20px;border:2px solid var(--br);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
+.loading-msg{text-align:center;padding:48px;font-family:var(--mono);color:var(--txd);font-size:13px}
+.loading-msg .loader{width:32px;height:32px;margin:0 auto 14px;display:block}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-bg.on{display:flex}
+.modal{background:var(--bgc);border:1px solid var(--br);border-radius:16px;width:100%;max-width:440px;position:relative;overflow:hidden}
+.modal-top-line::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:var(--disp);font-size:19px;font-weight:700;color:#fff;letter-spacing:1px}
+.modal-close{background:none;border:none;color:var(--txd);font-size:20px;cursor:pointer;padding:4px;transition:color .2s}
+.modal-close:hover{color:var(--r)}
+.modal-body{padding:24px}
+.modal-tabs{display:flex;border-bottom:1px solid var(--br);margin-bottom:22px}
+.mtab{flex:1;padding:10px;font-family:var(--mono);font-size:12px;background:none;border:none;border-bottom:2px solid transparent;color:var(--txd);cursor:pointer;transition:all .2s}
+.mtab.on{color:var(--g);border-bottom-color:var(--g)}
+.mtab-pane{display:none}
+.mtab-pane.on{display:block}
+.modal-err{color:var(--r);font-family:var(--mono);font-size:11px;margin-top:8px;display:none;text-align:center}
+
+/* ── LANDING (QUIZ SECTION) ── */
+#sec-quiz{}
+.hero{text-align:center;padding:20px 0 48px}
+.hero-pill{font-family:var(--mono);font-size:11px;color:var(--g);letter-spacing:3px;border:1px solid rgba(0,255,136,.3);display:inline-block;padding:5px 18px;border-radius:20px;background:var(--gg);margin-bottom:26px;animation:fadeUp .6s ease both}
+.hero-h1{font-family:var(--disp);font-size:60px;font-weight:700;line-height:1.05;color:#fff;margin-bottom:14px;letter-spacing:1px;animation:fadeUp .6s .1s ease both}
+.hero-h1 em{font-style:normal;color:var(--g);text-shadow:0 0 40px rgba(0,255,136,.35)}
+.hero-desc{font-size:15px;color:var(--txd);max-width:480px;margin:0 auto 36px;line-height:1.75;animation:fadeUp .6s .2s ease both}
+.hchips{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:44px;animation:fadeUp .6s .3s ease both}
+.hchip{font-family:var(--mono);font-size:12px;padding:9px 18px;border-radius:9px;border:1px solid var(--br);background:var(--bgc);color:var(--txd)}
+.hchip b{color:var(--g);font-size:17px;display:block;margin-bottom:2px;font-weight:400}
+
+/* start card */
+.start-card{background:var(--bgc);border:1px solid var(--br);border-radius:16px;padding:36px 40px;max-width:520px;margin:0 auto;position:relative;overflow:hidden;animation:fadeUp .6s .4s ease both}
+.start-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.start-card h3{font-family:var(--disp);font-size:20px;font-weight:600;color:#fff;margin-bottom:24px;letter-spacing:1px}
+.dpills{display:flex;gap:8px}
+.dpill{flex:1;padding:11px 8px;border:1px solid var(--br);border-radius:8px;text-align:center;cursor:pointer;font-family:var(--mono);font-size:12px;background:var(--bgp);color:var(--txd);transition:all .2s;user-select:none}
+.dpill.d-easy{border-color:rgba(0,255,136,.5);color:var(--g);background:var(--gg)}
+.dpill.d-med{border-color:rgba(255,170,0,.5);color:var(--y);background:var(--yg)}
+.dpill.d-hard{border-color:rgba(255,60,90,.5);color:var(--r);background:var(--rg)}
+.dpill:hover{border-color:var(--brb);color:var(--tx)}
+
+/* ── HUD ── */
+.hud{background:var(--bgc);border:1px solid var(--br);border-radius:12px;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.hud-agent{font-family:var(--mono);font-size:12px;color:var(--txd)}
+.hud-agent b{color:var(--g);font-size:14px;font-weight:400}
+.hud-nums{display:flex;gap:22px}
+.hnum{text-align:center}
+.hnum-v{font-family:var(--mono);font-size:22px;color:#fff;display:block;line-height:1}
+.hnum-v.g{color:var(--g)} .hnum-v.r{color:var(--r)}
+.hnum-l{font-size:9px;color:var(--txd);letter-spacing:1px;margin-top:3px}
+.hud-bar{min-width:170px}
+.hud-bar-lbl{font-family:var(--mono);font-size:10px;color:var(--txd);margin-bottom:4px;text-align:right}
+.ptrack{height:5px;background:var(--br);border-radius:5px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--gd),var(--g));border-radius:5px;transition:width .4s ease;box-shadow:0 0 8px rgba(0,255,136,.5)}
+
+/* ── MESSAGE VIEWER ── */
+.glayout{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+.msgv{background:var(--bgc);border:1px solid var(--br);border-radius:13px;overflow:hidden}
+.msgv-bar{background:var(--bgp);border-bottom:1px solid var(--br);padding:10px 18px;display:flex;align-items:center;gap:10px}
+.wdots{display:flex;gap:6px}
+.wd{width:11px;height:11px;border-radius:50%}
+.wd-r{background:#ff5f57} .wd-y{background:#ffbd2e} .wd-g{background:#28c840}
+.win-t{font-family:var(--mono);font-size:11px;color:var(--txd);flex:1;text-align:center}
+.win-chips{display:flex;gap:5px}
+.msg-meta{padding:18px 22px 14px;border-bottom:1px solid var(--br)}
+.snd-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.snd-av{width:40px;height:40px;border-radius:50%;background:var(--bgp);border:1px solid var(--brb);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.snd-n{font-size:14px;font-weight:500;color:#fff}
+.snd-a{font-family:var(--mono);font-size:11px;color:var(--txd);margin-top:2px}
+.msg-subj{font-size:15px;font-weight:600;color:#fff}
+.msg-body{padding:22px;font-size:14px;line-height:1.85;color:var(--tx);min-height:160px}
+.red-flag{color:#ff7777;font-weight:600;background:rgba(255,60,90,.1);padding:1px 5px;border-radius:4px;border-bottom:1px dashed rgba(255,60,90,.6)}
+
+/* answer btns */
+.ans-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:16px 22px;border-top:1px solid var(--br)}
+.abtn{padding:13px;border-radius:10px;border:1px solid;font-family:var(--disp);font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s}
+.abtn:active{transform:scale(.97)}
+.abtn-p{background:rgba(255,60,90,.08);border-color:var(--r);color:var(--r)}
+.abtn-p:hover{background:var(--r);color:#fff;box-shadow:0 4px 22px rgba(255,60,90,.4)}
+.abtn-l{background:rgba(0,255,136,.06);border-color:var(--g);color:var(--g)}
+.abtn-l:hover{background:var(--g);color:var(--bg);box-shadow:0 4px 22px rgba(0,255,136,.35)}
+
+/* result panel */
+.rpanel{display:none;margin:0 22px 16px;border-radius:10px;overflow:hidden;border:1px solid;animation:slideIn .3s ease}
+.rpanel.ok{border-color:var(--g);background:rgba(0,255,136,.04)}
+.rpanel.bad{border-color:var(--r);background:rgba(255,60,90,.04)}
+.rp-head{padding:11px 17px;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600}
+.rpanel.ok .rp-head{background:rgba(0,255,136,.08);color:var(--g)}
+.rpanel.bad .rp-head{background:rgba(255,60,90,.08);color:var(--r)}
+.rp-body{padding:13px 17px}
+.rp-explain{font-size:13px;color:var(--tx);line-height:1.65;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--br)}
+.clues-hd{font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:9px}
+.clue{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;font-size:12px;color:var(--tx);line-height:1.55}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--g);flex-shrink:0;margin-top:5px}
+.rpanel.bad .cdot{background:var(--r)}
+.btn-next{display:none;margin:0 22px 20px;float:right;padding:11px 26px;background:var(--g);color:var(--bg);border:none;border-radius:8px;font-family:var(--disp);font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,255,136,.25)}
+.btn-next:hover{background:#00ffaa;box-shadow:0 4px 22px rgba(0,255,136,.45)}
+.cf::after{content:'';display:table;clear:both}
+
+/* sidebar */
+.sidebar{display:flex;flex-direction:column;gap:14px}
+.scard{background:var(--bgc);border:1px solid var(--br);border-radius:12px;overflow:hidden}
+.scard-head{padding:11px 15px;border-bottom:1px solid var(--br)}
+.scard-head span{font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;text-transform:uppercase}
+.scard-body{padding:13px 15px}
+.flag{display:flex;gap:9px;margin-bottom:9px;font-size:12px;color:var(--txd);line-height:1.5}
+.flag-i{flex-shrink:0;font-size:13px}
+.log-wrap{max-height:220px;overflow-y:auto}
+.log-wrap::-webkit-scrollbar{width:3px}
+.log-wrap::-webkit-scrollbar-thumb{background:var(--brb);border-radius:3px}
+.log-row{display:flex;align-items:center;justify-content:space-between;padding:7px 15px;border-bottom:1px solid var(--br);font-family:var(--mono);font-size:11px}
+.log-row:last-child{border-bottom:none}
+.ln{color:var(--txd);width:18px} .lt{flex:1;color:var(--tx);padding:0 8px}
+.lok{color:var(--g)} .lbad{color:var(--r)}
+.log-empty{font-family:var(--mono);font-size:11px;color:var(--txd);text-align:center;padding:18px}
+
+/* ── FINAL / RESULTS ── */
+.fcard{background:var(--bgc);border:1px solid var(--br);border-radius:18px;overflow:hidden;position:relative;max-width:640px;margin:0 auto}
+.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.f-top{padding:48px 38px 34px;text-align:center;border-bottom:1px solid var(--br)}
+.f-emoji{font-size:64px;display:block;margin-bottom:16px}
+.f-title{font-family:var(--disp);font-size:30px;font-weight:700;color:#fff;margin-bottom:8px}
+.f-big{font-family:var(--mono);font-size:50px;color:var(--g);text-shadow:0 0 28px rgba(0,255,136,.35);line-height:1;margin:16px 0 5px}
+.f-sub{font-size:13px;color:var(--txd)}
+.f-msg{font-size:14px;color:var(--txd);margin-top:16px;line-height:1.65}
+.fstats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--br)}
+.fst{padding:24px 12px;text-align:center;border-right:1px solid var(--br)}
+.fst:last-child{border-right:none}
+.fst-v{font-family:var(--mono);font-size:26px;color:#fff;display:block}
+.fst-v.g{color:var(--g)} .fst-v.r{color:var(--r)}
+.fst-l{font-size:10px;color:var(--txd);letter-spacing:1px;margin-top:4px}
+.f-footer{padding:22px;display:flex;gap:10px;justify-content:center}
+
+/* score history */
+.score-table{width:100%;border-collapse:collapse;font-size:13px}
+.score-table th{font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;padding:10px 14px;border-bottom:1px solid var(--br);text-align:left;font-weight:400}
+.score-table td{padding:10px 14px;border-bottom:1px solid rgba(26,40,64,.5);color:var(--tx)}
+.score-table tr:last-child td{border-bottom:none}
+.score-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ── CONFETTI / CELEBRATION ── */
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}
+.celebrate-overlay{display:none;position:fixed;inset:0;z-index:9998;align-items:center;justify-content:center;pointer-events:none}
+.celebrate-overlay.on{display:flex}
+.burst{position:absolute;width:60px;height:60px;border-radius:50%;animation:burstScale .8s ease forwards}
+.streak-toast{position:fixed;top:90px;left:50%;transform:translateX(-50%);background:var(--bgc);border:1px solid var(--y);border-radius:10px;padding:10px 20px;font-family:var(--mono);font-size:14px;color:var(--y);z-index:500;display:none;animation:streakPop .8s ease forwards}
+
+/* ── PASSWORD CHECKER ── */
+.pw-meter-track{height:10px;background:var(--br);border-radius:10px;overflow:hidden;margin:16px 0 6px}
+.pw-meter-fill{height:100%;border-radius:10px;transition:width .5s ease,background .5s ease;width:0%}
+.pw-rating{font-family:var(--mono);font-size:22px;font-weight:700;margin-bottom:4px}
+.pw-entropy{font-family:var(--mono);font-size:12px;color:var(--txd)}
+.pw-crack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.pw-crack-box{background:var(--bgp);border:1px solid var(--br);border-radius:8px;padding:14px}
+.pw-crack-box .lbl{font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:1px;margin-bottom:5px}
+.pw-crack-box .val{font-family:var(--mono);font-size:15px;color:#fff;font-weight:600}
+.issue-item{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--tx);margin-bottom:7px;line-height:1.5}
+.sug-item{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--tx);margin-bottom:7px;line-height:1.5}
+.issue-dot{width:6px;height:6px;border-radius:50%;background:var(--r);flex-shrink:0;margin-top:5px}
+.sug-dot{width:6px;height:6px;border-radius:50%;background:var(--g);flex-shrink:0;margin-top:5px}
+.pw-strength-bar{display:flex;gap:4px;margin-top:10px}
+.pw-seg{flex:1;height:5px;background:var(--br);border-radius:3px;transition:background .3s}
+.pw-input-wrap{position:relative}
+.pw-show-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--txd);cursor:pointer;font-size:12px;font-family:var(--mono)}
+
+/* ── PHISHING DETECTOR ── */
+.upload-zone{border:2px dashed var(--brb);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bgp)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--g);background:var(--gg)}
+.upload-zone p{font-family:var(--mono);font-size:12px;color:var(--txd);margin-top:8px}
+.upload-zone .icon{font-size:32px}
+.file-preview{background:var(--bgp);border:1px solid var(--br);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;color:var(--txd);margin-top:10px}
+.file-preview .rem{margin-left:auto;cursor:pointer;color:var(--r);font-size:14px;background:none;border:none}
+.verdict-banner{padding:20px 22px;border-radius:10px;display:flex;align-items:center;gap:16px;border:1px solid;animation:slideIn .3s ease}
+.verdict-banner.phishing{background:rgba(255,60,90,.06);border-color:var(--r)}
+.verdict-banner.legit{background:rgba(0,255,136,.04);border-color:var(--g)}
+.verdict-banner.suspicious{background:rgba(255,170,0,.06);border-color:var(--y)}
+.verdict-icon{font-size:36px}
+.verdict-label{font-family:var(--disp);font-size:24px;font-weight:700}
+.verdict-banner.phishing .verdict-label{color:var(--r)}
+.verdict-banner.legit .verdict-label{color:var(--g)}
+.verdict-banner.suspicious .verdict-label{color:var(--y)}
+.conf-bar-track{height:8px;background:var(--br);border-radius:8px;overflow:hidden;margin-top:6px;max-width:200px}
+.conf-bar-fill{height:100%;border-radius:8px;transition:width .5s ease}
+.red-flag-item{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(26,40,64,.5)}
+.red-flag-item:last-child{border-bottom:none}
+.rfi-ico{font-size:18px;flex-shrink:0}
+.rfi-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px}
+.rfi-det{font-size:12px;color:var(--txd);line-height:1.5}
+
+/* ── URL CHECKER ── */
+.url-verdict{padding:22px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--br)}
+.risk-circle{width:72px;height:72px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:3px solid}
+.risk-circle .score{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1}
+.risk-circle .lbl{font-family:var(--mono);font-size:9px;letter-spacing:1px;margin-top:2px}
+.risk-low{border-color:var(--g);color:var(--g)}
+.risk-med{border-color:var(--y);color:var(--y)}
+.risk-high{border-color:var(--r);color:var(--r)}
+.risk-crit{border-color:#ff0050;color:#ff0050}
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--br)}
+.check-item{background:var(--bgc);padding:14px 18px;display:flex;align-items:flex-start;gap:12px}
+.check-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.check-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+.check-det{font-size:11px;color:var(--txd);line-height:1.4}
+.check-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;margin-left:8px}
+.cb-pass{background:rgba(0,255,136,.1);color:var(--g);border:1px solid rgba(0,255,136,.2)}
+.cb-warn{background:rgba(255,170,0,.1);color:var(--y);border:1px solid rgba(255,170,0,.2)}
+.cb-fail{background:rgba(255,60,90,.1);color:var(--r);border:1px solid rgba(255,60,90,.2)}
+
+/* ── PROFILE / SCORES SECTION ── */
+.profile-grid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+.profile-card{background:var(--bgc);border:1px solid var(--br);border-radius:14px;padding:28px;text-align:center}
+.profile-av{width:72px;height:72px;background:var(--gg);border:2px solid var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.profile-name{font-family:var(--disp);font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.profile-uname{font-family:var(--mono);font-size:12px;color:var(--txd)}
+.profile-stat{background:var(--bgp);border-radius:8px;padding:12px;margin-top:12px;text-align:center}
+.profile-stat-v{font-family:var(--mono);font-size:24px;color:var(--g);display:block}
+.profile-stat-l{font-size:11px;color:var(--txd);letter-spacing:1px;margin-top:2px}
+
+/* ── FOOTER ── */
+.site-footer{border-top:1px solid var(--br);padding:18px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--txd);margin-top:60px;position:relative;z-index:1}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.glayout{grid-template-columns:1fr}.profile-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.hero-h1{font-size:36px}.fstats{grid-template-columns:repeat(2,1fr)}.check-grid{grid-template-columns:1fr}.hud{flex-wrap:wrap}}
+
+/* ── LANGUAGE SELECTOR ── */
+.lang-opt{padding:10px 16px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--tx);cursor:pointer;transition:all .15s;border-bottom:1px solid rgba(26,40,64,.5)}
+.lang-opt:last-child{border-bottom:none}
+.lang-opt:hover{background:var(--gg);color:var(--g)}
+.lang-opt.active{color:var(--g);background:var(--gg)}
+#translate-overlay{display:none;position:fixed;inset:0;background:rgba(7,9,15,.88);z-index:8000;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#translate-overlay.on{display:flex}
+#translate-overlay .tl-text{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--g)}
+#translate-overlay .tl-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--txd);margin-top:4px}
+</style>
+</head>
+<body>
+
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
+<div class="streak-toast" id="streak-toast"></div>
+
+<!-- Translation Loading Overlay -->
+<div id="translate-overlay">
+  <div class="loader" style="width:40px;height:40px;border-width:3px"></div>
+  <div>
+    <div class="tl-text">🌐 Translating with AI...</div>
+    <div class="tl-sub" id="tl-progress">Preparing translation...</div>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header class="hdr z1">
+  <div class="hdr-in">
+    <div class="logo">
+      <div class="logo-ico">🛡️</div>
+      <div>
+        <div class="logo-name">PHISHGUARD<span class="cursor"></span></div>
+        <div class="logo-tag" id="logo-tag-el">CYBER AWARENESS TRAINER v2.0</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <!-- Language Selector -->
+      <div style="position:relative" id="lang-wrap">
+        <button onclick="toggleLangMenu()" id="lang-btn"
+          style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--g);padding:6px 14px;border:1px solid rgba(0,255,136,.4);border-radius:20px;background:var(--gg);cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
+          🌐 <span id="lang-label">English</span> ▾
+        </button>
+        <div id="lang-menu"
+          style="display:none;position:absolute;top:38px;right:0;background:#0c1220;border:1px solid #243658;border-radius:10px;min-width:180px;z-index:9999;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.6);">
+          <div style="padding:8px 14px;font-family:'Share Tech Mono',monospace;font-size:9px;color:#4a6080;letter-spacing:2px;border-bottom:1px solid #1a2840;">SELECT LANGUAGE</div>
+          <div style="max-height:300px;overflow-y:auto">
+            <div class="lang-opt" onclick="setLang('English','🇬🇧')">🇬🇧 English</div>
+            <div class="lang-opt" onclick="setLang('Hindi','🇮🇳')">🇮🇳 Hindi</div>
+            <div class="lang-opt" onclick="setLang('Tamil','🇮🇳')">🇮🇳 Tamil</div>
+            <div class="lang-opt" onclick="setLang('Telugu','🇮🇳')">🇮🇳 Telugu</div>
+            <div class="lang-opt" onclick="setLang('Bengali','🇮🇳')">🇮🇳 Bengali</div>
+            <div class="lang-opt" onclick="setLang('Marathi','🇮🇳')">🇮🇳 Marathi</div>
+            <div class="lang-opt" onclick="setLang('Gujarati','🇮🇳')">🇮🇳 Gujarati</div>
+            <div class="lang-opt" onclick="setLang('Punjabi','🇮🇳')">🇮🇳 Punjabi</div>
+            <div class="lang-opt" onclick="setLang('Spanish','🇪🇸')">🇪🇸 Spanish</div>
+            <div class="lang-opt" onclick="setLang('French','🇫🇷')">🇫🇷 French</div>
+            <div class="lang-opt" onclick="setLang('German','🇩🇪')">🇩🇪 German</div>
+            <div class="lang-opt" onclick="setLang('Arabic','🇸🇦')">🇸🇦 Arabic</div>
+            <div class="lang-opt" onclick="setLang('Chinese','🇨🇳')">🇨🇳 Chinese</div>
+            <div class="lang-opt" onclick="setLang('Japanese','🇯🇵')">🇯🇵 Japanese</div>
+          </div>
+        </div>
+      </div>
+      <a href="#" class="nav-pill" onclick="switchTab('quiz');return false">Quiz</a>
+      <a href="#" class="nav-pill" onclick="switchTab('pw');return false">Password</a>
+      <a href="#" class="nav-pill" onclick="switchTab('phish');return false">Detect</a>
+      <a href="#" class="nav-pill" onclick="switchTab('url');return false">URL Safety</a>
+      <div id="auth-btn-area">
+        <button class="user-btn" onclick="openModal()">👤 Login / Register</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ TAB NAV ══ -->
+<nav class="tabnav z1">
+  <div class="tabnav-in">
+    <button class="tabtrig on" id="tab-quiz"  onclick="switchTab('quiz')">🎮 Quiz</button>
+    <button class="tabtrig"    id="tab-pw"    onclick="switchTab('pw')">🔑 Password Checker</button>
+    <button class="tabtrig"    id="tab-phish" onclick="switchTab('phish')">🕵️ Phishing Detector</button>
+    <button class="tabtrig"    id="tab-url"   onclick="switchTab('url')">🌐 URL Safety</button>
+    <button class="tabtrig"    id="tab-scores" onclick="switchTab('scores')">📊 My Scores</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     QUIZ SECTION
+══════════════════════════════════════════ -->
+<section class="pane on z1" id="sec-quiz">
+
+  <!-- LANDING STATE -->
+  <div id="quiz-landing">
+    <div class="hero">
+      <div class="hero-pill" id="hero-pill-el">🔐 AI-POWERED PHISHING TRAINING</div>
+      <h1 class="hero-h1" id="hero-h1-el">Can you spot a<br><em>phishing</em> scam?</h1>
+      <p class="hero-desc" id="hero-desc-el">AI generates fresh, realistic messages every time you play. Build real scam-resistance before it costs you.</p>
+      <div class="hchips">
+        <div class="hchip"><b>AI</b><span id="hchip-ai-el">GENERATED</span></div>
+        <div class="hchip"><b>3</b><span id="hchip-ch-el">CHANNELS</span></div>
+        <div class="hchip"><b>∞</b><span id="hchip-uq-el">UNIQUE QUESTIONS</span></div>
+        <div class="hchip"><b>3</b><span id="hchip-dl-el">DIFFICULTY LEVELS</span></div>
+      </div>
+      <div class="start-card">
+        <h3 id="sc-title-el">Configure Your Training</h3>
+        <div class="fgroup">
+          <label class="flabel" id="sc-name-lbl-el">YOUR NAME</label>
+          <input type="text" id="playerName" class="finput" placeholder="e.g. Rahul Kumar" autocomplete="off">
+          <div class="ferr" id="name-err">⚠ Please enter your name</div>
+        </div>
+        <div class="fgroup">
+          <label class="flabel" id="sc-count-lbl-el">NUMBER OF QUESTIONS (1–20)</label>
+          <input type="number" id="qCount" class="finput" value="10" min="1" max="20">
+        </div>
+        <div class="fgroup">
+          <label class="flabel" id="sc-diff-lbl-el">DIFFICULTY</label>
+          <div class="dpills">
+            <div class="dpill d-easy" id="dpill-easy-el" onclick="pickDiff('easy',this)">🟢 Easy</div>
+            <div class="dpill"        id="dpill-med-el"  onclick="pickDiff('medium',this)">🟡 Medium</div>
+            <div class="dpill"        id="dpill-hard-el" onclick="pickDiff('hard',this)">🔴 Hard</div>
+          </div>
+          <input type="hidden" id="difficulty" value="easy">
+        </div>
+        <button class="btn-g btn-full" onclick="startQuiz()" id="start-btn">
+          START TRAINING →
+        </button>
+        <div style="margin-top:12px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--txd)" id="sc-footer-el">
+          Questions generated by AI — unique every session
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="quiz-loading" style="display:none">
+    <div class="loading-msg">
+      <div class="loader"></div>
+      <div style="color:var(--g);font-size:14px;margin-bottom:4px">Generating questions with AI...</div>
+      <div>This takes 5–10 seconds</div>
+    </div>
+  </div>
+
+  <!-- GAME STATE -->
+  <div id="quiz-game" style="display:none">
+    <div class="hud">
+      <div class="hud-agent">AGENT: <b id="d-name">---</b></div>
+      <div class="hud-nums">
+        <div class="hnum"><span class="hnum-v g" id="d-score">0</span><div class="hnum-l" id="hnum-correct-el">CORRECT</div></div>
+        <div class="hnum"><span class="hnum-v r" id="d-wrong">0</span><div class="hnum-l" id="hnum-missed-el">MISSED</div></div>
+        <div class="hnum"><span class="hnum-v"   id="d-streak">0</span><div class="hnum-l" id="hnum-streak-el">STREAK 🔥</div></div>
+      </div>
+      <div class="hud-bar">
+        <div class="hud-bar-lbl">Q <span id="d-qnum">1</span> / <span id="d-qtot">10</span></div>
+        <div class="ptrack"><div class="pfill" id="pfill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="glayout">
+      <!-- Message Viewer -->
+      <div class="msgv">
+        <div class="msgv-bar">
+          <div class="wdots"><div class="wd wd-r"></div><div class="wd wd-y"></div><div class="wd wd-g"></div></div>
+          <div class="win-t" id="win-t">inbox — email</div>
+          <div class="win-chips">
+            <span class="chip" id="type-chip">EMAIL</span>
+            <span class="chip" id="diff-chip">EASY</span>
+          </div>
+        </div>
+        <div class="msg-meta">
+          <div class="snd-row">
+            <div class="snd-av" id="snd-av">📧</div>
+            <div>
+              <div class="snd-n" id="snd-n">Sender</div>
+              <div class="snd-a" id="snd-a">address</div>
+            </div>
+          </div>
+          <div class="msg-subj" id="msg-subj">Subject</div>
+        </div>
+        <div class="msg-body" id="msg-body">Loading...</div>
+        <div class="ans-row" id="ans-row">
+          <button class="abtn abtn-p" id="abtn-p-el" onclick="checkAns('phishing')">☠️ PHISHING</button>
+          <button class="abtn abtn-l" id="abtn-l-el" onclick="checkAns('legit')">✅ LEGITIMATE</button>
+        </div>
+        <div class="rpanel" id="rpanel">
+          <div class="rp-head"><span id="r-ico">✅</span><span id="r-head">Result</span></div>
+          <div class="rp-body">
+            <div class="rp-explain" id="r-explain"></div>
+            <div class="clues-hd">KEY CLUES</div>
+            <div id="clues"></div>
+          </div>
+        </div>
+        <div class="cf"><button class="btn-next" id="btn-next" onclick="nextQ()">Next Message →</button></div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="scard">
+          <div class="scard-head"><span id="rf-title-el">🔍 Red Flags</span></div>
+          <div class="scard-body">
+            <div class="flag"><span class="flag-i">⚡</span><span id="rf1-el">Urgency: "Act NOW!", "24 hrs left"</span></div>
+            <div class="flag"><span class="flag-i">🔗</span><span id="rf2-el">Links not matching the official site</span></div>
+            <div class="flag"><span class="flag-i">✏️</span><span id="rf3-el">Grammar mistakes and typos</span></div>
+            <div class="flag"><span class="flag-i">🔑</span><span id="rf4-el">Asking for OTP, PIN or card details</span></div>
+            <div class="flag"><span class="flag-i">📮</span><span id="rf5-el">Fake sender IDs like sbi@gmail.com</span></div>
+            <div class="flag"><span class="flag-i">🎁</span><span id="rf6-el">Too-good-to-be-true offers</span></div>
+            <div class="flag"><span class="flag-i">⚠️</span><span id="rf7-el">Threats if you don't respond</span></div>
+          </div>
+        </div>
+        <div class="scard">
+          <div class="scard-head"><span id="log-title-el">📋 Answer Log</span></div>
+          <div class="log-wrap" id="log-wrap">
+            <div class="log-empty" id="log-empty">No answers yet...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL STATE -->
+  <div id="quiz-final" style="display:none">
+    <div class="fcard" style="margin-top:10px">
+      <div class="f-top">
+        <span class="f-emoji" id="f-emoji">🏆</span>
+        <div class="f-title" id="f-title">Training Complete!</div>
+        <div class="f-big"  id="f-big">0/0</div>
+        <div class="f-sub"  id="f-sub">calculating...</div>
+        <div class="f-msg"  id="f-msg"></div>
+      </div>
+      <div class="fstats">
+        <div class="fst"><span class="fst-v"   id="fs-tot">10</span><div class="fst-l">TOTAL</div></div>
+        <div class="fst"><span class="fst-v g" id="fs-cor">-</span><div class="fst-l">CORRECT</div></div>
+        <div class="fst"><span class="fst-v r" id="fs-wr">-</span><div class="fst-l">WRONG</div></div>
+        <div class="fst"><span class="fst-v"   id="fs-acc">-</span><div class="fst-l">ACCURACY</div></div>
+      </div>
+      <div class="f-footer">
+        <button class="btn-g" id="f-replay-el" onclick="resetQuiz()">🔄 Play Again</button>
+        <button class="btn-ghost" id="f-scores-el" onclick="switchTab('scores')">📊 View Scores</button>
+      </div>
+    </div>
+    <div id="save-score-msg" style="text-align:center;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--txd)"></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     PASSWORD CHECKER SECTION
+══════════════════════════════════════════ -->
+<section class="pane z1" id="sec-pw">
+  <div style="max-width:860px;margin:0 auto">
+    <div style="margin-bottom:28px">
+      <div class="hero-pill" style="animation:none">🔑 PASSWORD STRENGTH ANALYZER</div>
+      <h2 style="font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;margin:10px 0 8px;letter-spacing:1px">
+        How <span style="color:var(--g)">Strong</span> Is Your Password?
+      </h2>
+      <p style="font-size:14px;color:var(--txd);line-height:1.7">Powered by AI. Get a detailed analysis of your password strength, estimated crack times, and actionable improvement tips.</p>
+    </div>
+
+    <div class="card card-top-line" style="margin-bottom:20px">
+      <div class="card-pad">
+        <label class="flabel">ENTER PASSWORD TO ANALYZE</label>
+        <div class="pw-input-wrap" style="display:flex;gap:10px">
+          <input type="password" id="pw-input" class="finput" placeholder="Type your password here..." oninput="onPwType()" style="flex:1">
+          <button class="btn-ghost" onclick="togglePwVis()" id="pw-vis-btn">👁 Show</button>
+          <button class="btn-g" onclick="analyzePw()" id="pw-btn" style="padding:11px 22px;white-space:nowrap">Analyze →</button>
+        </div>
+        <!-- live strength segments -->
+        <div class="pw-strength-bar" id="pw-segs">
+          <div class="pw-seg" id="seg0"></div><div class="pw-seg" id="seg1"></div>
+          <div class="pw-seg" id="seg2"></div><div class="pw-seg" id="seg3"></div>
+          <div class="pw-seg" id="seg4"></div>
+        </div>
+        <div id="pw-live-label" style="font-family:var(--mono);font-size:11px;color:var(--txd);margin-top:4px"></div>
+      </div>
+    </div>
+
+    <div id="pw-loading" style="display:none"><div class="loading-msg"><div class="loader"></div>Analyzing with AI...</div></div>
+
+    <div id="pw-result" style="display:none">
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;margin-bottom:16px">
+        <!-- Score circle -->
+        <div class="card" style="display:flex;align-items:center;justify-content:center;padding:28px">
+          <div style="text-align:center">
+            <div style="position:relative;display:inline-block">
+              <svg width="120" height="120" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--br)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke-width="10" stroke-linecap="round" id="score-arc" style="transition:stroke-dashoffset .8s ease,stroke .5s ease" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <span style="font-family:var(--mono);font-size:26px;font-weight:700;color:#fff" id="pw-score-num">0</span>
+                <span style="font-family:var(--mono);font-size:9px;color:var(--txd);letter-spacing:1px">/100</span>
+              </div>
+            </div>
+            <div class="pw-rating" id="pw-rating">Analyzing...</div>
+            <div class="pw-entropy" id="pw-entropy"></div>
+          </div>
+        </div>
+        <!-- Crack times -->
+        <div class="card" style="padding:20px">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:14px">ESTIMATED CRACK TIME</div>
+          <div class="pw-crack-grid">
+            <div class="pw-crack-box">
+              <div class="lbl">OFFLINE ATTACK (GPU)</div>
+              <div class="val" id="pw-offline">—</div>
+            </div>
+            <div class="pw-crack-box">
+              <div class="lbl">ONLINE ATTACK (Rate-limited)</div>
+              <div class="val" id="pw-online">—</div>
+            </div>
+          </div>
+          <div style="font-family:var(--mono);font-size:12px;padding:12px;background:var(--bgp);border-radius:8px;border-left:3px solid var(--g);color:var(--tx);line-height:1.6" id="pw-verdict"></div>
+        </div>
+      </div>
+      <!-- Issues + Suggestions -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-head"><span>⚠️</span><span class="card-head-title">Issues Found</span></div>
+          <div style="padding:16px" id="pw-issues"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span>💡</span><span class="card-head-title">Suggestions</span></div>
+          <div style="padding:16px" id="pw-sugs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     PHISHING DETECTOR SECTION
+══════════════════════════════════════════ -->
+<section class="pane z1" id="sec-phish">
+  <div style="max-width:860px;margin:0 auto">
+    <div style="margin-bottom:28px">
+      <div class="hero-pill" style="animation:none">🕵️ AI PHISHING DETECTOR</div>
+      <h2 style="font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;margin:10px 0 8px;letter-spacing:1px">
+        Analyze Any <span style="color:var(--g)">Message or File</span>
+      </h2>
+      <p style="font-size:14px;color:var(--txd);line-height:1.7">Paste a suspicious text, upload a screenshot or document. AI will detect phishing indicators instantly.</p>
+    </div>
+
+    <div class="card card-top-line" style="margin-bottom:20px">
+      <div class="card-pad">
+        <!-- Input method tabs -->
+        <div style="display:flex;gap:8px;margin-bottom:20px">
+          <button class="nav-pill active" id="phish-tab-text" onclick="switchPhishTab('text')">📝 Paste Text</button>
+          <button class="nav-pill"        id="phish-tab-file" onclick="switchPhishTab('file')">📎 Upload File/Image</button>
+        </div>
+
+        <!-- Text input -->
+        <div id="phish-text-area">
+          <label class="flabel">PASTE THE SUSPICIOUS MESSAGE HERE</label>
+          <textarea class="finput finput-area" id="phish-text" placeholder="Paste email body, SMS text, WhatsApp message, or any suspicious content here..."></textarea>
+        </div>
+
+        <!-- File upload -->
+        <div id="phish-file-area" style="display:none">
+          <label class="flabel">UPLOAD SCREENSHOT, IMAGE OR DOCUMENT</label>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('phish-file').click()" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">
+            <div class="icon">📤</div>
+            <div style="font-size:14px;color:var(--tx);margin-top:6px">Click to upload or drag &amp; drop</div>
+            <p>Supports: JPG, PNG, GIF, WEBP, PDF, TXT, DOC</p>
+          </div>
+          <input type="file" id="phish-file" style="display:none" accept="image/*,.pdf,.txt,.doc,.docx" onchange="onFileSelect(event)">
+          <div id="file-preview" style="display:none" class="file-preview">
+            <span id="file-name">filename.jpg</span>
+            <button class="rem" onclick="clearFile()">✕</button>
+          </div>
+        </div>
+
+        <button class="btn-g" onclick="analyzePhishing()" style="margin-top:18px;padding:13px 32px" id="phish-btn">
+          🔍 Analyze for Phishing →
+        </button>
+      </div>
+    </div>
+
+    <div id="phish-loading" style="display:none"><div class="loading-msg"><div class="loader"></div>Analyzing content with AI...</div></div>
+
+    <div id="phish-result" style="display:none">
+      <!-- Verdict banner -->
+      <div class="verdict-banner" id="phish-verdict-banner" style="margin-bottom:16px">
+        <div class="verdict-icon" id="ph-icon">🔴</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="verdict-label" id="ph-verdict">PHISHING</span>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--txd)" id="ph-cat"></span>
+          </div>
+          <div style="font-size:13px;color:var(--txd);margin-top:4px" id="ph-summary"></div>
+          <div style="margin-top:8px">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--txd)">CONFIDENCE: <span id="ph-conf">0</span>%</span>
+            <div class="conf-bar-track"><div class="conf-bar-fill" id="ph-conf-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-head"><span>🚩</span><span class="card-head-title">Red Flags Detected</span></div>
+          <div id="ph-red-flags"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span>✅</span><span class="card-head-title">Safe Indicators</span></div>
+          <div id="ph-safe" style="padding:16px"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;padding:18px 20px;border-left:3px solid var(--g)">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:6px">RECOMMENDATION</div>
+        <div style="font-size:14px;color:var(--tx);line-height:1.6" id="ph-rec"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     URL SAFETY SECTION
+══════════════════════════════════════════ -->
+<section class="pane z1" id="sec-url">
+  <div style="max-width:860px;margin:0 auto">
+    <div style="margin-bottom:28px">
+      <div class="hero-pill" style="animation:none">🌐 WEBSITE SECURITY CHECKER</div>
+      <h2 style="font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;margin:10px 0 8px;letter-spacing:1px">
+        Is This <span style="color:var(--g)">Website Safe?</span>
+      </h2>
+      <p style="font-size:14px;color:var(--txd);line-height:1.7">Enter any URL to get a security analysis powered by AI. Checks for phishing indicators, suspicious domain patterns, and security best practices.</p>
+    </div>
+
+    <div class="card card-top-line" style="margin-bottom:20px">
+      <div class="card-pad">
+        <label class="flabel">ENTER URL TO ANALYZE</label>
+        <div style="display:flex;gap:10px">
+          <input type="url" id="url-input" class="finput" placeholder="https://example.com" style="flex:1">
+          <button class="btn-g" onclick="analyzeUrl()" id="url-btn" style="padding:11px 24px;white-space:nowrap">
+            Check →
+          </button>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--txd)">Try examples:</span>
+          <a href="#" style="font-family:var(--mono);font-size:10px;color:var(--g);text-decoration:none" onclick="setUrl('https://google.com');return false">google.com</a>
+          <a href="#" style="font-family:var(--mono);font-size:10px;color:var(--r);text-decoration:none" onclick="setUrl('http://sbi-unblock.tk/verify');return false">sbi-unblock.tk</a>
+          <a href="#" style="font-family:var(--mono);font-size:10px;color:var(--y);text-decoration:none" onclick="setUrl('http://paypa1.com/login');return false">paypa1.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="url-loading" style="display:none"><div class="loading-msg"><div class="loader"></div>Analyzing URL security with AI...</div></div>
+
+    <div id="url-result" style="display:none">
+      <div class="card card-top-line" style="margin-bottom:16px;overflow:hidden">
+        <!-- Verdict row -->
+        <div class="url-verdict">
+          <div class="risk-circle" id="risk-circle">
+            <div class="score" id="risk-score">0</div>
+            <div class="lbl">RISK</div>
+          </div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+              <span style="font-family:var(--disp);font-size:24px;font-weight:700" id="url-verdict-label">SAFE</span>
+              <span class="chip" id="url-risk-chip">LOW</span>
+              <span style="font-family:var(--mono);font-size:11px;color:var(--txd)" id="url-category"></span>
+            </div>
+            <div style="font-family:var(--mono);font-size:12px;color:var(--txd);word-break:break-all" id="url-display"></div>
+            <div style="font-size:13px;color:var(--tx);margin-top:6px;line-height:1.6" id="url-summary"></div>
+          </div>
+        </div>
+
+        <!-- Checks grid -->
+        <div class="check-grid" id="checks-grid"></div>
+      </div>
+      <!-- Flagged engines table -->
+<div id="flagged-wrap" style="display:none;margin-top:16px;">
+  <div class="card">
+    <div class="card-head"><span>🚩</span><span class="card-head-title">Engines That Flagged This URL</span></div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;" id="flagged-table">
+        <thead>
+          <tr>
+            <th style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;padding:10px 16px;border-bottom:1px solid #1a2840;text-align:left;font-weight:400;letter-spacing:2px;">ENGINE</th>
+            <th style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;padding:10px 16px;border-bottom:1px solid #1a2840;text-align:left;font-weight:400;letter-spacing:2px;">CATEGORY</th>
+            <th style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;padding:10px 16px;border-bottom:1px solid #1a2840;text-align:left;font-weight:400;letter-spacing:2px;">RESULT</th>
+          </tr>
+        </thead>
+        <tbody id="flagged-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+      <div class="card" style="padding:18px 20px;border-left:3px solid var(--g)">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:6px">RECOMMENDATION</div>
+        <div style="font-size:14px;color:var(--tx);line-height:1.6" id="url-rec"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SCORES SECTION
+══════════════════════════════════════════ -->
+<section class="pane z1" id="sec-scores">
+  <div id="scores-logged-out" style="text-align:center;padding:60px 20px">
+    <div style="font-size:48px;margin-bottom:16px">🔐</div>
+    <div style="font-family:var(--disp);font-size:24px;color:#fff;margin-bottom:8px">Log in to see your scores</div>
+    <div style="font-family:var(--mono);font-size:13px;color:var(--txd);margin-bottom:22px">Your quiz results are saved when you're logged in</div>
+    <button class="btn-g" onclick="openModal()">Login / Register</button>
+  </div>
+
+  <div id="scores-content" style="display:none">
+    <div class="profile-grid">
+      <div class="profile-card">
+        <div class="profile-av">👤</div>
+        <div class="profile-name" id="profile-name">---</div>
+        <div class="profile-uname" id="profile-uname">@---</div>
+        <div class="profile-stat">
+          <span class="profile-stat-v" id="profile-best">—</span>
+          <div class="profile-stat-l">BEST ACCURACY</div>
+        </div>
+        <div class="profile-stat" style="margin-top:8px">
+          <span class="profile-stat-v" id="profile-games">0</span>
+          <div class="profile-stat-l">GAMES PLAYED</div>
+        </div>
+        <button class="btn-ghost btn-full" id="logout-btn-el" style="margin-top:16px" onclick="logoutUser()">🚪 Logout</button>
+      </div>
+      <div>
+        <div style="font-family:var(--disp);font-size:22px;font-weight:600;color:#fff;margin-bottom:16px;letter-spacing:1px" id="sc-hist-title-el">📊 Score History</div>
+        <div class="card">
+          <div id="scores-loading" class="loading-msg" style="display:none"><div class="loader"></div>Loading scores...</div>
+          <div id="scores-table-wrap" style="overflow-x:auto">
+            <table class="score-table" id="scores-table">
+              <thead><tr>
+                <th>#</th><th>DATE</th><th>DIFFICULTY</th><th>SCORE</th><th>ACCURACY</th>
+              </tr></thead>
+              <tbody id="scores-tbody"></tbody>
+            </table>
+          </div>
+          <div id="scores-empty" style="text-align:center;padding:40px;font-family:var(--mono);font-size:12px;color:var(--txd);display:none">
+            No scores yet. Play a quiz to see your history!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ LOGIN / REGISTER MODAL ══ -->
+<!-- ══ LOGIN / REGISTER MODAL ══ -->
+<div id="modal-bg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.80);z-index:9000;justify-content:center;align-items:center;padding:20px;">
+  <div style="background:#0c1220;border:1px solid #243658;border-radius:16px;width:100%;max-width:420px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+    
+    <!-- green top line -->
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#00ff88,transparent);"></div>
+
+    <!-- Modal Header -->
+    <div style="padding:20px 24px 16px;border-bottom:1px solid #1a2840;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:white;letter-spacing:1px;">🔐 Account</div>
+      <button onclick="closeModal()" style="background:none;border:none;color:#4a6080;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;">✕</button>
+    </div>
+
+    <!-- Tab switcher -->
+    <div style="display:flex;border-bottom:1px solid #1a2840;">
+      <button id="mt-login" onclick="switchMTab('login')"
+        style="flex:1;padding:12px;font-family:'Share Tech Mono',monospace;font-size:13px;background:none;border:none;border-bottom:2px solid #00ff88;color:#00ff88;cursor:pointer;">
+        Login
+      </button>
+      <button id="mt-register" onclick="switchMTab('register')"
+        style="flex:1;padding:12px;font-family:'Share Tech Mono',monospace;font-size:13px;background:none;border:none;border-bottom:2px solid transparent;color:#4a6080;cursor:pointer;">
+        Register
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div style="padding:24px;">
+
+      <!-- LOGIN PANE -->
+      <div id="mp-login">
+        <div style="margin-bottom:16px;">
+          <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;letter-spacing:2px;display:block;margin-bottom:7px;">USERNAME</label>
+          <input type="text" id="l-user" placeholder="your_username"
+            style="width:100%;background:#101827;border:1px solid #243658;color:white;padding:11px 14px;border-radius:8px;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;letter-spacing:2px;display:block;margin-bottom:7px;">PASSWORD</label>
+          <input type="password" id="l-pass" placeholder="••••••••"
+            style="width:100%;background:#101827;border:1px solid #243658;color:white;padding:11px 14px;border-radius:8px;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;">
+        </div>
+        <button id="login-btn" onclick="doLogin()"
+          style="width:100%;padding:14px;background:#00ff88;color:#07090f;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;cursor:pointer;">
+          Login →
+        </button>
+        <div id="login-err" style="color:#ff3c5a;font-family:'Share Tech Mono',monospace;font-size:11px;margin-top:10px;text-align:center;display:none;"></div>
+      </div>
+
+      <!-- REGISTER PANE -->
+      <div id="mp-register" style="display:none;">
+        <div style="margin-bottom:16px;">
+          <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;letter-spacing:2px;display:block;margin-bottom:7px;">FULL NAME</label>
+          <input type="text" id="r-name" placeholder="Rahul Kumar"
+            style="width:100%;background:#101827;border:1px solid #243658;color:white;padding:11px 14px;border-radius:8px;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;letter-spacing:2px;display:block;margin-bottom:7px;">USERNAME</label>
+          <input type="text" id="r-user" placeholder="rahul_kumar123"
+            style="width:100%;background:#101827;border:1px solid #243658;color:white;padding:11px 14px;border-radius:8px;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;letter-spacing:2px;display:block;margin-bottom:7px;">PASSWORD</label>
+          <input type="password" id="r-pass" placeholder="Min 6 characters"
+            style="width:100%;background:#101827;border:1px solid #243658;color:white;padding:11px 14px;border-radius:8px;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;">
+        </div>
+        <button id="reg-btn" onclick="doRegister()"
+          style="width:100%;padding:14px;background:#00ff88;color:#07090f;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;cursor:pointer;">
+          Create Account →
+        </button>
+        <div id="reg-err" style="color:#ff3c5a;font-family:'Share Tech Mono',monospace;font-size:11px;margin-top:10px;text-align:center;display:none;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<footer class="site-footer z1">
+  PhishGuard &copy; 2025 &nbsp;|&nbsp; HTML + CSS + Bootstrap + JavaScript + Python Flask + MySQL
+  <br><span style="color:#1a3a1a">Never share your OTP, PIN or passwords with anyone.</span>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+// =============================================
+// PhishGuard - Frontend JavaScript
+// BCA Sem 2 | Web Technology Project
+// Uses Fetch API to call Flask backend
+// =============================================
+
+var BASE = '';  // empty = same origin (Flask serves this page)
+
+// game state variables
+var playerName = '';
+var selDiff = 'easy';
+var sessionQs = [];
+var curQ = 0;
+var score = 0;
+var wrong = 0;
+var streak = 0;
+var bestStreak = 0;
+var answered = false;
+var totalAns = 0;
+
+// auth state
+var currentUser = null;
+
+// ── TAB SWITCHING ──────────────────────────────────
+
+function switchTab(t) {
+    document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('on'); });
+    document.querySelectorAll('.tabtrig').forEach(function(b){ b.classList.remove('on'); });
+    document.getElementById('sec-' + t).classList.add('on');
+    document.getElementById('tab-' + t).classList.add('on');
+    // refresh scores if going to scores tab
+    if (t === 'scores') loadScores();
+}
+
+// ── AUTH ───────────────────────────────────────────
+
+function openModal() {
+    var m = document.getElementById('modal-bg');
+    m.style.display = 'flex';
+}
+
+function closeModal() {
+    var m = document.getElementById('modal-bg');
+    m.style.display = 'none';
+    document.getElementById('login-err').style.display = 'none';
+    document.getElementById('reg-err').style.display  = 'none';
+}
+
+function closeModalBg(e) {
+    if (e.target === document.getElementById('modal-bg')) closeModal();
+}
+function clearModalErrors() {
+    document.getElementById('login-err').style.display = 'none';
+    document.getElementById('reg-err').style.display = 'none';
+}
+
+function switchMTab(t) {
+    // reset both tabs
+    document.getElementById('mt-login').style.borderBottomColor    = 'transparent';
+    document.getElementById('mt-login').style.color                = '#4a6080';
+    document.getElementById('mt-register').style.borderBottomColor = 'transparent';
+    document.getElementById('mt-register').style.color             = '#4a6080';
+
+    // hide both panes
+    document.getElementById('mp-login').style.display    = 'none';
+    document.getElementById('mp-register').style.display = 'none';
+
+    // activate selected
+    document.getElementById('mt-' + t).style.borderBottomColor = '#00ff88';
+    document.getElementById('mt-' + t).style.color             = '#00ff88';
+    document.getElementById('mp-' + t).style.display           = 'block';
+}
+
+function doLogin() {
+    var u = document.getElementById('l-user').value.trim();
+    var p = document.getElementById('l-pass').value.trim();
+
+    if (!u || !p) { 
+        showModalErr('login', 'Please fill in all fields'); 
+        return; 
+    }
+
+    var btn = document.getElementById('login-btn');
+    btn.disabled = true; 
+    btn.innerHTML = 'Logging in...';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/login', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.withCredentials = true;
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            btn.disabled = false; 
+            btn.innerHTML = 'Login →';
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.success) { 
+                    setLoggedIn(d); 
+                    closeModal(); 
+                } else {
+                    showModalErr('login', d.error || 'Login failed');
+                }
+            } catch(e) {
+                showModalErr('login', 'Server error. Check terminal for details.');
+                console.error('Login response:', xhr.responseText);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        btn.disabled = false; 
+        btn.innerHTML = 'Login →';
+        showModalErr('login', 'Cannot connect to server. Is Flask running on port 5000?');
+    };
+
+    xhr.send(JSON.stringify({username: u, password: p}));
+}
+
+function doRegister() {
+    var n = document.getElementById('r-name').value.trim();
+    var u = document.getElementById('r-user').value.trim();
+    var p = document.getElementById('r-pass').value.trim();
+
+    if (!n || !u || !p) { 
+        showModalErr('register', 'Please fill in all fields'); 
+        return; 
+    }
+
+    var btn = document.getElementById('reg-btn');
+    btn.disabled = true; 
+    btn.innerHTML = 'Creating account...';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/register', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.withCredentials = true;
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            btn.disabled = false; 
+            btn.innerHTML = 'Create Account →';
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.success) { 
+                    setLoggedIn(d); 
+                    closeModal(); 
+                } else {
+                    showModalErr('register', d.error || 'Registration failed');
+                }
+            } catch(e) {
+                showModalErr('register', 'Server error. Check terminal for details.');
+                console.error('Register response:', xhr.responseText);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        btn.disabled = false; 
+        btn.innerHTML = 'Create Account →';
+        showModalErr('register', 'Cannot connect to server. Is Flask running on port 5000?');
+    };
+
+    xhr.send(JSON.stringify({name: n, username: u, password: p}));
+}
+
+function setLoggedIn(d) {
+    currentUser = d;
+    var area = document.getElementById('auth-btn-area');
+    area.innerHTML = '<div class="user-btn" style="cursor:default">👤 <b>' + d.name + '</b></div>';
+    document.getElementById('profile-name').innerHTML = d.name;
+    document.getElementById('profile-uname').innerHTML = '@' + d.username;
+    document.getElementById('scores-logged-out').style.display = 'none';
+    document.getElementById('scores-content').style.display = 'block';
+}
+
+function logoutUser() {
+    fetch(BASE + '/api/logout', {method:'POST', credentials:'include'})
+    .then(function(){ location.reload(); });
+}
+
+function showModalErr(type, msg) {
+    var el = document.getElementById(type === 'login' ? 'login-err' : 'reg-err');
+    el.innerHTML = '⚠ ' + msg;
+    el.style.display = 'block';
+}
+
+// check if already logged in on page load
+window.addEventListener('load', function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/me', true);
+    xhr.withCredentials = true;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.loggedIn) setLoggedIn(d);
+            } catch(e) {}
+        }
+    };
+    xhr.send();
+});
+
+// ── DIFFICULTY PICKER ──────────────────────────────
+
+function pickDiff(level, el) {
+    document.querySelectorAll('.dpill').forEach(function(p){ p.className = 'dpill'; });
+    var cls = level === 'easy' ? 'd-easy' : (level === 'medium' ? 'd-med' : 'd-hard');
+    el.className = 'dpill ' + cls;
+    selDiff = level;
+    document.getElementById('difficulty').value = level;
+}
+
+// ── QUIZ ───────────────────────────────────────────
+
+function startQuiz() {
+    var n = document.getElementById('playerName').value.trim();
+    var cnt = parseInt(document.getElementById('qCount').value) || 10;
+    if (!n) { document.getElementById('name-err').style.display = 'block'; return; }
+    document.getElementById('name-err').style.display = 'none';
+    playerName = n;
+    cnt = Math.min(Math.max(cnt, 1), 20);
+
+    document.getElementById('quiz-landing').style.display = 'none';
+    document.getElementById('quiz-loading').style.display = 'block';
+
+    fetch(BASE + '/api/generate-questions', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({difficulty: selDiff, count: cnt})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+        document.getElementById('quiz-loading').style.display = 'none';
+        if (d.success && d.questions && d.questions.length) {
+            sessionQs = d.questions;
+            curQ = 0; score = 0; wrong = 0; streak = 0; bestStreak = 0; totalAns = 0; answered = false;
+            document.getElementById('log-wrap').innerHTML = '<div class="log-empty" id="log-empty">No answers yet...</div>';
+            document.getElementById('d-name').innerHTML = playerName;
+            document.getElementById('d-qtot').innerHTML = sessionQs.length;
+            document.getElementById('quiz-game').style.display = 'block';
+            loadQ();
+        } else {
+            document.getElementById('quiz-landing').style.display = 'block';
+            alert('Error generating questions: ' + (d.error || 'Unknown error'));
+        }
+    })
+    .catch(function(e) {
+        document.getElementById('quiz-loading').style.display = 'none';
+        document.getElementById('quiz-landing').style.display = 'block';
+        alert('Cannot connect to server. Make sure Flask is running: python app.py');
+    });
+}
+
+function loadQ() {
+    answered = false;
+    var q = sessionQs[curQ];
+    var pct = (curQ / sessionQs.length) * 100;
+    document.getElementById('pfill').style.width = pct + '%';
+    document.getElementById('d-qnum').innerHTML = curQ + 1;
+
+    // type chip + window title
+    var tc = document.getElementById('type-chip');
+    var av = document.getElementById('snd-av');
+    if (q.type === 'email') {
+        tc.className = 'chip chip-email'; tc.innerHTML = '📧 EMAIL';
+        document.getElementById('win-t').innerHTML = 'inbox — email';
+        av.innerHTML = '📧';
+        document.getElementById('msg-subj').innerHTML = '<strong>Subject:</strong> ' + (q.subject || '');
+    } else if (q.type === 'sms') {
+        tc.className = 'chip chip-sms'; tc.innerHTML = '📱 SMS';
+        document.getElementById('win-t').innerHTML = 'messages — sms';
+        av.innerHTML = '📱';
+        document.getElementById('msg-subj').innerHTML = '<strong>From:</strong> ' + (q.sender || '');
+    } else {
+        tc.className = 'chip chip-wa'; tc.innerHTML = '💬 WHATSAPP';
+        document.getElementById('win-t').innerHTML = 'whatsapp — chat';
+        av.innerHTML = '💬';
+        document.getElementById('msg-subj').innerHTML = '<strong>From:</strong> ' + (q.sender || '');
+    }
+
+    var dc = document.getElementById('diff-chip');
+    if (selDiff === 'easy') { dc.className = 'chip chip-easy'; dc.innerHTML = 'EASY'; }
+    else if (selDiff === 'medium') { dc.className = 'chip chip-med'; dc.innerHTML = 'MEDIUM'; }
+    else { dc.className = 'chip chip-hard'; dc.innerHTML = 'HARD'; }
+
+    document.getElementById('snd-n').innerHTML = q.senderName || q.sender || 'Unknown';
+    document.getElementById('snd-a').innerHTML = q.sender || '';
+    document.getElementById('msg-body').innerHTML = q.body || 'No message content';
+
+    document.getElementById('rpanel').style.display = 'none';
+    document.getElementById('btn-next').style.display = 'none';
+    document.getElementById('ans-row').style.display = 'grid';
+}
+
+function checkAns(userAns) {
+    if (answered) return;
+    answered = true;
+    document.getElementById('ans-row').style.display = 'none';
+
+    var q = sessionQs[curQ];
+    var ok = (userAns === q.answer);
+    totalAns++;
+
+    if (ok) {
+        score++; streak++;
+        if (streak > bestStreak) bestStreak = streak;
+        if (streak >= 3) showStreakToast(streak);
+    } else {
+        wrong++; streak = 0;
+    }
+
+    var rp = document.getElementById('rpanel');
+    rp.className = 'rpanel ' + (ok ? 'ok' : 'bad');
+    rp.style.display = 'block';
+    document.getElementById('r-ico').innerHTML = ok ? '✅' : '❌';
+    var wrongLabel = q.answer === 'phishing' ? 'This WAS phishing!' : 'This was actually legitimate!';
+    document.getElementById('r-head').innerHTML = ok
+        ? 'Correct! Good eye, ' + playerName + '!'
+        : 'Wrong answer. ' + wrongLabel;
+    document.getElementById('r-explain').innerHTML = q.explanation || '';
+
+    var cl = document.getElementById('clues');
+    cl.innerHTML = '';
+    var clues = q.clues || [];
+    for (var i = 0; i < clues.length; i++) {
+        var d = document.createElement('div');
+        d.className = 'clue';
+        d.innerHTML = "<div class='cdot'></div><span>" + clues[i] + "</span>";
+        cl.appendChild(d);
+    }
+
+    document.getElementById('d-score').innerHTML = score;
+    document.getElementById('d-wrong').innerHTML = wrong;
+    document.getElementById('d-streak').innerHTML = streak;
+    document.getElementById('btn-next').style.display = 'inline-block';
+    addLog(q.type, ok);
+}
+
+function nextQ() {
+    curQ++;
+    if (curQ >= sessionQs.length) showFinal();
+    else loadQ();
+}
+
+function showFinal() {
+    document.getElementById('quiz-game').style.display = 'none';
+    document.getElementById('quiz-final').style.display = 'block';
+
+    var acc = Math.round((score / sessionQs.length) * 100);
+    document.getElementById('f-big').innerHTML = score + '/' + sessionQs.length;
+    document.getElementById('f-sub').innerHTML = playerName + ' | ' + acc + '% accuracy';
+    document.getElementById('fs-tot').innerHTML = sessionQs.length;
+    document.getElementById('fs-cor').innerHTML = score;
+    document.getElementById('fs-wr').innerHTML = wrong;
+    document.getElementById('fs-acc').innerHTML = acc + '%';
+
+    var emoji, title, msg;
+    if (acc >= 90) { emoji='🏆'; title='Cyber Security Expert!'; msg='Outstanding! You are extremely hard to fool. Keep spreading awareness!'; }
+    else if (acc >= 70) { emoji='😎'; title='Pretty Safe Online!'; msg='You caught most scams. A little more practice and you will be unstoppable!'; }
+    else if (acc >= 50) { emoji='🤔'; title='Stay More Alert!'; msg='You caught some but missed others. Review the red flags and try again!'; }
+    else { emoji='😬'; title='Needs More Practice!'; msg='Scammers could trick you right now. Study the clues and replay to improve!'; }
+
+    document.getElementById('f-emoji').innerHTML = emoji;
+    document.getElementById('f-title').innerHTML = title;
+    document.getElementById('f-msg').innerHTML = msg;
+
+    // launch celebration!
+    launchConfetti();
+
+    // save score to DB if logged in
+    if (currentUser) {
+        fetch(BASE + '/api/save-score', {
+            method: 'POST', credentials: 'include',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({score: score, total: sessionQs.length, difficulty: selDiff})
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+            if (d.success) {
+                document.getElementById('save-score-msg').innerHTML = '✅ Score saved to your profile!';
+            }
+        });
+    } else {
+        document.getElementById('save-score-msg').innerHTML = '<a href="#" onclick="openModal();return false;" style="color:var(--g);font-family:var(--mono)">Login to save your score →</a>';
+    }
+}
+
+function resetQuiz() {
+    document.getElementById('quiz-landing').style.display = 'block';
+    document.getElementById('quiz-game').style.display = 'none';
+    document.getElementById('quiz-final').style.display = 'none';
+    document.getElementById('quiz-loading').style.display = 'none';
+}
+
+function addLog(type, ok) {
+    var el = document.getElementById('log-empty');
+    if (el) el.remove();
+    var lw = document.getElementById('log-wrap');
+    var row = document.createElement('div');
+    row.className = 'log-row';
+    row.innerHTML = "<span class='ln'>" + totalAns + "</span><span class='lt'>" + type.toUpperCase() + "</span>" +
+        (ok ? "<span class='lok'>✓</span>" : "<span class='lbad'>✗</span>");
+    lw.insertBefore(row, lw.firstChild);
+}
+
+// ── CONFETTI & CELEBRATION ─────────────────────────
+
+function launchConfetti() {
+    var canvas = document.getElementById('confetti-canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var pieces = [];
+    var colors = ['#00ff88','#ff3c5a','#ffaa00','#0084ff','#ff88cc','#ffffff'];
+
+    for (var i = 0; i < 180; i++) {
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: -20,
+            r: Math.random() * 8 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 4 + 2,
+            rot: Math.random() * 360,
+            rotV: (Math.random() - 0.5) * 10,
+            shape: Math.random() > 0.5 ? 'rect' : 'circle',
+            w: Math.random() * 12 + 4,
+            h: Math.random() * 6 + 3
+        });
+    }
+
+    var frame = 0;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var alive = false;
+        for (var i = 0; i < pieces.length; i++) {
+            var p = pieces[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.08;
+            p.rot += p.rotV;
+            if (p.y < canvas.height + 30) alive = true;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.globalAlpha = Math.max(0, 1 - p.y / canvas.height);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+            }
+            ctx.restore();
+        }
+        frame++;
+        if (alive && frame < 300) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    draw();
+}
+
+function showStreakToast(n) {
+    var t = document.getElementById('streak-toast');
+    t.innerHTML = '🔥 ' + n + ' in a row!';
+    t.style.display = 'block';
+    setTimeout(function(){ t.style.display = 'none'; }, 1500);
+}
+
+// ── SCORES ─────────────────────────────────────────
+
+function loadScores() {
+    if (!currentUser) return;
+    document.getElementById('scores-loading').style.display = 'block';
+    fetch(BASE + '/api/my-scores', {credentials: 'include'})
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+        document.getElementById('scores-loading').style.display = 'none';
+        if (!d.success) return;
+        var rows = d.scores;
+        var tbody = document.getElementById('scores-tbody');
+        tbody.innerHTML = '';
+        if (!rows.length) {
+            document.getElementById('scores-empty').style.display = 'block';
+            return;
+        }
+        var bestAcc = 0;
+        for (var i = 0; i < rows.length; i++) {
+            var r = rows[i];
+            if (parseFloat(r.accuracy) > bestAcc) bestAcc = parseFloat(r.accuracy);
+            var tr = document.createElement('tr');
+            var diffColor = r.difficulty === 'easy' ? 'var(--g)' : r.difficulty === 'medium' ? 'var(--y)' : 'var(--r)';
+            tr.innerHTML = '<td style="color:var(--txd)">' + (i+1) + '</td>' +
+                '<td>' + r.date + '</td>' +
+                '<td><span style="color:' + diffColor + ';font-family:var(--mono);font-size:11px">' + r.difficulty.toUpperCase() + '</span></td>' +
+                '<td>' + r.score + ' / ' + r.total_questions + '</td>' +
+                '<td><span style="color:var(--g);font-family:var(--mono)">' + r.accuracy + '%</span></td>';
+            tbody.appendChild(tr);
+        }
+        document.getElementById('profile-best').innerHTML = bestAcc + '%';
+        document.getElementById('profile-games').innerHTML = rows.length;
+    });
+}
+
+// ── PASSWORD CHECKER ───────────────────────────────
+
+var pwShowPass = false;
+
+function togglePwVis() {
+    pwShowPass = !pwShowPass;
+    var inp = document.getElementById('pw-input');
+    inp.type = pwShowPass ? 'text' : 'password';
+    document.getElementById('pw-vis-btn').innerHTML = pwShowPass ? '🙈 Hide' : '👁 Show';
+}
+
+function onPwType() {
+    var pw = document.getElementById('pw-input').value;
+    var segs = document.querySelectorAll('.pw-seg');
+    var score = 0;
+    if (pw.length >= 6) score++;
+    if (pw.length >= 10) score++;
+    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+    if (/\d/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    var colors = ['#ff3c5a','#ff3c5a','#ffaa00','#ffaa00','#00ff88'];
+    var labels = ['','Very Weak','Weak','Fair','Strong','Very Strong'];
+    segs.forEach(function(s, i){ s.style.background = i < score ? colors[score-1] : 'var(--br)'; });
+    document.getElementById('pw-live-label').innerHTML = pw.length ? '<span style="color:' + colors[Math.max(0,score-1)] + '">' + labels[score] + '</span>' : '';
+}
+
+function analyzePw() {
+    var pw = document.getElementById('pw-input').value;
+    if (!pw) return;
+    document.getElementById('pw-result').style.display = 'none';
+    document.getElementById('pw-loading').style.display = 'block';
+    document.getElementById('pw-btn').disabled = true;
+
+    fetch(BASE + '/api/check-password', {
+        method: 'POST', credentials: 'include',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({password: pw})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+        document.getElementById('pw-loading').style.display = 'none';
+        document.getElementById('pw-btn').disabled = false;
+        if (!d.success) { alert('Error: ' + d.error); return; }
+
+        document.getElementById('pw-result').style.display = 'block';
+
+        // score arc
+        var arc = document.getElementById('score-arc');
+        var circ = 326.7;
+        arc.style.strokeDashoffset = circ - (d.score / 100) * circ;
+        var colorMap = {red:'#ff3c5a', orange:'#ff8800', yellow:'#ffaa00', green:'#00ff88', cyan:'#00ffff'};
+        var col = colorMap[d.color] || '#00ff88';
+        arc.style.stroke = col;
+
+        document.getElementById('pw-score-num').innerHTML = d.score;
+        document.getElementById('pw-rating').innerHTML = d.rating;
+        document.getElementById('pw-rating').style.color = col;
+        document.getElementById('pw-entropy').innerHTML = 'Entropy: ' + (d.entropy || '—') + ' bits';
+        document.getElementById('pw-offline').innerHTML = d.crackTimeOffline || '—';
+        document.getElementById('pw-online').innerHTML = d.crackTimeOnline || '—';
+        document.getElementById('pw-verdict').innerHTML = d.verdict || '';
+
+        // issues
+        var iss = document.getElementById('pw-issues');
+        iss.innerHTML = '';
+        var issues = d.issues || [];
+        if (!issues.length) {
+            iss.innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--g)">✅ No major issues found!</div>';
+        } else {
+            issues.forEach(function(it){
+                iss.innerHTML += "<div class='issue-item'><div class='issue-dot'></div><span>" + it + "</span></div>";
+            });
+        }
+
+        // suggestions
+        var sugs = document.getElementById('pw-sugs');
+        sugs.innerHTML = '';
+        var suggestions = d.suggestions || [];
+        if (!suggestions.length) {
+            sugs.innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--g)">✅ Password looks great!</div>';
+        } else {
+            suggestions.forEach(function(s){
+                sugs.innerHTML += "<div class='sug-item'><div class='sug-dot'></div><span>" + s + "</span></div>";
+            });
+        }
+    })
+    .catch(function(){ document.getElementById('pw-loading').style.display='none'; document.getElementById('pw-btn').disabled=false; alert('Connection error. Is Flask running?'); });
+}
+
+// ── PHISHING DETECTOR ──────────────────────────────
+
+var phishFile = null;
+var phishMode = 'text';
+
+function switchPhishTab(t) {
+    phishMode = t;
+    document.getElementById('phish-text-area').style.display = t === 'text' ? 'block' : 'none';
+    document.getElementById('phish-file-area').style.display = t === 'file' ? 'block' : 'none';
+    document.getElementById('phish-tab-text').className = 'nav-pill' + (t === 'text' ? ' active' : '');
+    document.getElementById('phish-tab-file').className = 'nav-pill' + (t === 'file' ? ' active' : '');
+}
+
+function onDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag'); }
+function onDragLeave(e) { document.getElementById('upload-zone').classList.remove('drag'); }
+function onDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag');
+    var files = e.dataTransfer.files;
+    if (files.length) handleFile(files[0]);
+}
+function onFileSelect(e) { if (e.target.files.length) handleFile(e.target.files[0]); }
+function handleFile(f) {
+    phishFile = f;
+    document.getElementById('file-name').innerHTML = '📎 ' + f.name + ' (' + (f.size/1024).toFixed(1) + ' KB)';
+    document.getElementById('file-preview').style.display = 'flex';
+}
+function clearFile() { phishFile = null; document.getElementById('file-preview').style.display = 'none'; document.getElementById('phish-file').value = ''; }
+
+function analyzePhishing() {
+    var text = document.getElementById('phish-text').value.trim();
+    if (phishMode === 'text' && !text) { alert('Please paste a message to analyze'); return; }
+    if (phishMode === 'file' && !phishFile) { alert('Please upload a file'); return; }
+
+    document.getElementById('phish-result').style.display = 'none';
+    document.getElementById('phish-loading').style.display = 'block';
+    document.getElementById('phish-btn').disabled = true;
+
+    var fd = new FormData();
+    if (text) fd.append('text', text);
+    if (phishFile) fd.append('file', phishFile);
+
+    fetch(BASE + '/api/check-phishing', {method:'POST', credentials:'include', body: fd})
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+        document.getElementById('phish-loading').style.display = 'none';
+        document.getElementById('phish-btn').disabled = false;
+        if (!d.success) { alert('Error: ' + d.error); return; }
+
+        document.getElementById('phish-result').style.display = 'block';
+        var v = (d.verdict || 'UNKNOWN').toUpperCase();
+        var banner = document.getElementById('phish-verdict-banner');
+        var icons = {PHISHING:'🔴', LEGITIMATE:'🟢', SUSPICIOUS:'🟡', UNKNOWN:'⚪'};
+        var classes = {PHISHING:'phishing', LEGITIMATE:'legit', SUSPICIOUS:'suspicious', UNKNOWN:'suspicious'};
+        banner.className = 'verdict-banner ' + (classes[v] || 'suspicious');
+        document.getElementById('ph-icon').innerHTML = icons[v] || '⚪';
+        document.getElementById('ph-verdict').innerHTML = v;
+        document.getElementById('ph-cat').innerHTML = d.category || '';
+        document.getElementById('ph-summary').innerHTML = d.summary || '';
+        document.getElementById('ph-conf').innerHTML = d.confidence || 0;
+        var confColor = v === 'PHISHING' ? '#ff3c5a' : v === 'LEGITIMATE' ? '#00ff88' : '#ffaa00';
+        document.getElementById('ph-conf-bar').style.width = (d.confidence || 0) + '%';
+        document.getElementById('ph-conf-bar').style.background = confColor;
+
+        // red flags
+        var rf = document.getElementById('ph-red-flags');
+        rf.innerHTML = '';
+        var flags = d.redFlags || [];
+        if (!flags.length) {
+            rf.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:12px;color:var(--g)">✅ No red flags detected</div>';
+        } else {
+            flags.forEach(function(f){
+                rf.innerHTML += '<div class="red-flag-item"><div class="rfi-ico">🚩</div><div><div class="rfi-name">' + (f.flag||'') + '</div><div class="rfi-det">' + (f.detail||'') + '</div></div></div>';
+            });
+        }
+
+        // safe indicators
+        var si = document.getElementById('ph-safe');
+        si.innerHTML = '';
+        var safe = d.safeIndicators || [];
+        if (!safe.length) {
+            si.innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--txd)">No safe indicators found.</div>';
+        } else {
+            safe.forEach(function(s){
+                si.innerHTML += '<div class="clue"><div class="cdot" style="background:var(--g)"></div><span>' + s + '</span></div>';
+            });
+        }
+        document.getElementById('ph-rec').innerHTML = d.recommendation || '';
+    })
+    .catch(function(){ document.getElementById('phish-loading').style.display='none'; document.getElementById('phish-btn').disabled=false; alert('Connection error. Is Flask running?'); });
+}
+
+// ── URL CHECKER ────────────────────────────────────
+
+function setUrl(u) { document.getElementById('url-input').value = u; }
+
+function analyzeUrl() {
+    var url = document.getElementById('url-input').value.trim();
+    if (!url) { alert('Please enter a URL'); return; }
+    if (!url.startsWith('http')) url = 'https://' + url;
+
+    document.getElementById('url-result').style.display   = 'none';
+    document.getElementById('flagged-wrap').style.display = 'none';
+    document.getElementById('url-loading').style.display  = 'block';
+    document.getElementById('url-btn').disabled           = true;
+    document.getElementById('url-btn').innerHTML          = '⏳ Scanning...';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/check-url', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.withCredentials = true;
+    xhr.timeout = 60000;  // 60s for VT polling
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            document.getElementById('url-loading').style.display = 'none';
+            document.getElementById('url-btn').disabled          = false;
+            document.getElementById('url-btn').innerHTML         = 'Check →';
+
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (!d.success) { alert('Error: ' + d.error); return; }
+
+                document.getElementById('url-result').style.display = 'block';
+
+                var rs = d.riskScore || 0;
+                var rl = (d.riskLevel || 'LOW').toUpperCase();
+                var riskClass = rs < 30 ? 'risk-low' : rs < 60 ? 'risk-med' : rs < 80 ? 'risk-high' : 'risk-crit';
+                var circle = document.getElementById('risk-circle');
+                circle.className = 'risk-circle ' + riskClass;
+                document.getElementById('risk-score').innerHTML = rs;
+
+                var vColors = {SAFE:'var(--g)', SUSPICIOUS:'var(--y)', DANGEROUS:'var(--r)', PHISHING:'var(--r)'};
+                var v = (d.verdict || 'UNKNOWN').toUpperCase();
+                document.getElementById('url-verdict-label').innerHTML  = v;
+                document.getElementById('url-verdict-label').style.color = vColors[v] || 'var(--tx)';
+
+                var chipClass = rs < 30 ? 'chip-easy' : rs < 60 ? 'chip-med' : 'chip-hard';
+                document.getElementById('url-risk-chip').className  = 'chip ' + chipClass;
+                document.getElementById('url-risk-chip').innerHTML  = rl + ' RISK';
+                document.getElementById('url-category').innerHTML   = d.category || '';
+                document.getElementById('url-display').innerHTML    = d.url || url;
+                document.getElementById('url-summary').innerHTML    = d.summary || '';
+                document.getElementById('url-rec').innerHTML        = d.recommendation || '';
+
+                // checks grid
+                var grid = document.getElementById('checks-grid');
+                grid.innerHTML = '';
+                (d.checks || []).forEach(function(c) {
+                    var bc = c.status === 'pass' ? 'cb-pass' : c.status === 'warning' ? 'cb-warn' : 'cb-fail';
+                    var bt = c.status === 'pass' ? 'PASS'   : c.status === 'warning' ? 'WARN'   : 'FAIL';
+                    grid.innerHTML += '<div class="check-item">' +
+                        '<div class="check-ico">' + (c.icon||'🔍') + '</div>' +
+                        '<div><div class="check-name">' + c.name + '<span class="check-badge ' + bc + '">' + bt + '</span></div>' +
+                        '<div class="check-det">' + c.detail + '</div></div></div>';
+                });
+
+                // flagged engines table
+                var flagged = d.flaggedEngines || [];
+                if (flagged.length > 0) {
+                    document.getElementById('flagged-wrap').style.display = 'block';
+                    var tbody = document.getElementById('flagged-tbody');
+                    tbody.innerHTML = '';
+                    flagged.forEach(function(f) {
+                        var color = f.category === 'malicious' ? 'var(--r)' : 'var(--y)';
+                        tbody.innerHTML +=
+                            '<tr>' +
+                            '<td style="padding:10px 16px;border-bottom:1px solid rgba(26,40,64,.4);color:var(--tx)">' + f.engine + '</td>' +
+                            '<td style="padding:10px 16px;border-bottom:1px solid rgba(26,40,64,.4)"><span style="color:' + color + ';font-family:var(--mono);font-size:11px">' + f.category.toUpperCase() + '</span></td>' +
+                            '<td style="padding:10px 16px;border-bottom:1px solid rgba(26,40,64,.4);color:var(--txd);font-size:12px">' + (f.result || '—') + '</td>' +
+                            '</tr>';
+                    });
+                }
+
+            } catch(e) {
+                alert('Error parsing response. Check Flask terminal.');
+                console.error(xhr.responseText);
+            }
+        }
+    };
+
+    xhr.ontimeout = function() {
+        document.getElementById('url-loading').style.display = 'none';
+        document.getElementById('url-btn').disabled = false;
+        document.getElementById('url-btn').innerHTML = 'Check →';
+        alert('Request timed out. VirusTotal may be slow — try again.');
+    };
+
+    xhr.send(JSON.stringify({url: url}));
+}
+
+// =============================================
+// MULTI-LANGUAGE TRANSLATION SYSTEM
+// Uses AI API via Flask /api/translate
+// =============================================
+
+var currentLang = 'English';
+var translationCache = {};
+
+// All English strings — key matches element id map below
+var UI_STRINGS = {
+    'logo-tag-el':      'CYBER AWARENESS TRAINER v2.0',
+    'tab-quiz':         '🎮 Quiz',
+    'tab-pw':           '🔑 Password Checker',
+    'tab-phish':        '🕵️ Phishing Detector',
+    'tab-url':          '🌐 URL Safety',
+    'tab-scores':       '📊 My Scores',
+    'hero-pill-el':     '🔐 AI-POWERED PHISHING TRAINING',
+    'hero-h1-line1':    'Can you spot a',
+    'hero-h1-line2':    'phishing',
+    'hero-h1-line3':    'scam?',
+    'hero-desc-el':     'AI generates fresh, realistic messages every time you play. Build real scam-resistance before it costs you.',
+    'hchip-ai-el':      'GENERATED',
+    'hchip-ch-el':      'CHANNELS',
+    'hchip-uq-el':      'UNIQUE QUESTIONS',
+    'hchip-dl-el':      'DIFFICULTY LEVELS',
+    'sc-title-el':      'Configure Your Training',
+    'sc-name-lbl-el':   'YOUR NAME',
+    'sc-count-lbl-el':  'NUMBER OF QUESTIONS (1–20)',
+    'sc-diff-lbl-el':   'DIFFICULTY',
+    'dpill-easy-el':    '🟢 Easy',
+    'dpill-med-el':     '🟡 Medium',
+    'dpill-hard-el':    '🔴 Hard',
+    'start-btn':        'START TRAINING →',
+    'sc-footer-el':     'Questions generated by AI — unique every session',
+    'hnum-correct-el':  'CORRECT',
+    'hnum-missed-el':   'MISSED',
+    'hnum-streak-el':   'STREAK 🔥',
+    'abtn-p-el':        '☠️ PHISHING',
+    'abtn-l-el':        '✅ LEGITIMATE',
+    'rf-title-el':      '🔍 Red Flags',
+    'rf1-el':           'Urgency: "Act NOW!", "24 hrs left"',
+    'rf2-el':           'Links not matching the official site',
+    'rf3-el':           'Grammar mistakes and typos',
+    'rf4-el':           'Asking for OTP, PIN or card details',
+    'rf5-el':           'Fake sender IDs like sbi@gmail.com',
+    'rf6-el':           'Too-good-to-be-true offers',
+    'rf7-el':           'Threats if you don\'t respond',
+    'log-title-el':     '📋 Answer Log',
+    'f-replay-el':      '🔄 Play Again',
+    'f-scores-el':      '📊 View Scores',
+    'sc-hist-title-el': '📊 Score History',
+    'logout-btn-el':    '🚪 Logout'
+};
+
+// ── LANGUAGE MENU TOGGLE ─────────────────────
+
+function toggleLangMenu() {
+    var m = document.getElementById('lang-menu');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+
+// close menu when clicking outside
+document.addEventListener('click', function(e) {
+    var wrap = document.getElementById('lang-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('lang-menu').style.display = 'none';
+    }
+});
+
+// ── SET LANGUAGE ─────────────────────────────
+
+function setLang(language, flag) {
+    document.getElementById('lang-menu').style.display = 'none';
+
+    if (language === currentLang) return;
+
+    // English = just restore originals, no API needed
+    if (language === 'English') {
+        currentLang = 'English';
+        document.getElementById('lang-label').innerHTML = flag + ' English';
+        applyTranslation(UI_STRINGS);
+        // restore hero h1 properly
+        var h1 = document.getElementById('hero-h1-el');
+        if (h1) h1.innerHTML = 'Can you spot a<br><em>phishing</em> scam?';
+        document.body.setAttribute('dir', 'ltr');
+        return;
+    }
+
+    // check cache — no API call if already translated
+    if (translationCache[language]) {
+        currentLang = language;
+        document.getElementById('lang-label').innerHTML = flag + ' ' + language;
+        applyTranslation(translationCache[language]);
+        return;
+    }
+
+    // show loading overlay
+    document.getElementById('translate-overlay').classList.add('on');
+    document.getElementById('tl-progress').innerHTML = 'Translating to ' + language + '...';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/translate', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.withCredentials = true;
+    xhr.timeout = 30000;
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            document.getElementById('translate-overlay').classList.remove('on');
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.success) {
+                    currentLang = language;
+                    document.getElementById('lang-label').innerHTML = flag + ' ' + language;
+                    translationCache[language] = d.translated;
+                    applyTranslation(d.translated);
+                } else {
+                    alert('Translation error: ' + (d.error || 'Unknown error. Try again.'));
+                }
+            } catch(e) {
+                alert('Translation failed. Check Flask terminal.');
+                console.error(xhr.responseText);
+            }
+        }
+    };
+
+    xhr.ontimeout = function() {
+        document.getElementById('translate-overlay').classList.remove('on');
+        alert('Translation timed out. Try again.');
+    };
+
+    xhr.onerror = function() {
+        document.getElementById('translate-overlay').classList.remove('on');
+        alert('Connection error during translation. Is Flask running?');
+    };
+
+    xhr.send(JSON.stringify({texts: UI_STRINGS, language: language}));
+}
+
+// ── APPLY TRANSLATION TO DOM ─────────────────
+
+function applyTranslation(translated) {
+    // update all direct text elements
+    for (var key in translated) {
+        if (key === 'hero-h1-line1' || key === 'hero-h1-line2' || key === 'hero-h1-line3') continue;
+        var el = document.getElementById(key);
+        if (el) el.innerHTML = translated[key];
+    }
+
+    // handle hero h1 specially (has em tag inside)
+    var h1 = document.getElementById('hero-h1-el');
+    if (h1 && translated['hero-h1-line1'] && translated['hero-h1-line2'] && translated['hero-h1-line3']) {
+        h1.innerHTML = translated['hero-h1-line1'] + '<br><em>' +
+            translated['hero-h1-line2'] + '</em> ' +
+            translated['hero-h1-line3'];
+    }
+
+    // RTL for Arabic
+    document.body.setAttribute('dir', currentLang === 'Arabic' ? 'rtl' : 'ltr');
+}
+
+// initialize: set first tab active
+switchTab('quiz');
+
+// hope sir gives full marks - submitted on time 🙏
+
+</script>
+</body>
+</html>
