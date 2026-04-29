@@ -1,4 +1,4 @@
-# 🛡️ PhishGuard — Cyber Awareness Trainer v2.0
+# 🛡️ PhishGuard — Cyber Awareness Trainer
 ### Project
 
 ---
