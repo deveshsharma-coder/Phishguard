@@ -348,7 +348,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <div id="translate-overlay">
   <div class="loader" style="width:40px;height:40px;border-width:3px"></div>
   <div>
-    <div class="tl-text">🌐 Translating with AI...</div>
+    <div class="tl-text">🌐 Translating with Groq AI...</div>
     <div class="tl-sub" id="tl-progress">Preparing translation...</div>
   </div>
 </div>
@@ -464,8 +464,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div id="quiz-loading" style="display:none">
     <div class="loading-msg">
       <div class="loader"></div>
-      <div style="color:var(--g);font-size:14px;margin-bottom:4px">Generating questions with AI...</div>
-      <div>This takes 5–10 seconds</div>
+      <div style="color:var(--g);font-size:14px;margin-bottom:4px" id="quiz-loading-el">Generating questions with AI...</div>
+      <div id="quiz-loading-sub-el">This takes 5–10 seconds</div>
     </div>
   </div>
 
@@ -538,7 +538,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <div class="scard">
           <div class="scard-head"><span id="log-title-el">📋 Answer Log</span></div>
           <div class="log-wrap" id="log-wrap">
-            <div class="log-empty" id="log-empty">No answers yet...</div>
+            <div class="log-empty" id="log-empty"><span id="log-empty-el">No answers yet...</span></div>
           </div>
         </div>
       </div>
@@ -577,20 +577,20 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <section class="pane z1" id="sec-pw">
   <div style="max-width:860px;margin:0 auto">
     <div style="margin-bottom:28px">
-      <div class="hero-pill" style="animation:none">🔑 PASSWORD STRENGTH ANALYZER</div>
+      <div class="hero-pill" style="animation:none" id="pw-pill-el">🔑 PASSWORD STRENGTH ANALYZER</div>
       <h2 style="font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;margin:10px 0 8px;letter-spacing:1px">
-        How <span style="color:var(--g)">Strong</span> Is Your Password?
+        <span id="pw-h2a-el">How</span> <span style="color:var(--g)" id="pw-h2b-el">Strong</span> <span id="pw-h2c-el">Is Your Password?</span>
       </h2>
-      <p style="font-size:14px;color:var(--txd);line-height:1.7">Powered by AI. Get a detailed analysis of your password strength, estimated crack times, and actionable improvement tips.</p>
+      <p style="font-size:14px;color:var(--txd);line-height:1.7" id="pw-desc-el">Powered by AI. Get a detailed analysis of your password strength, estimated crack times, and actionable improvement tips.</p>
     </div>
 
     <div class="card card-top-line" style="margin-bottom:20px">
       <div class="card-pad">
-        <label class="flabel">ENTER PASSWORD TO ANALYZE</label>
+        <label class="flabel" id="pw-input-lbl-el">ENTER PASSWORD TO ANALYZE</label>
         <div class="pw-input-wrap" style="display:flex;gap:10px">
           <input type="password" id="pw-input" class="finput" placeholder="Type your password here..." oninput="onPwType()" style="flex:1">
-          <button class="btn-ghost" onclick="togglePwVis()" id="pw-vis-btn">👁 Show</button>
-          <button class="btn-g" onclick="analyzePw()" id="pw-btn" style="padding:11px 22px;white-space:nowrap">Analyze →</button>
+          <button class="btn-ghost" onclick="togglePwVis()" id="pw-vis-btn">👁 <span id="pw-show-el">Show</span></button>
+          <button class="btn-g" onclick="analyzePw()" id="pw-btn" style="padding:11px 22px;white-space:nowrap"><span id="pw-analyze-el">Analyze →</span></button>
         </div>
         <!-- live strength segments -->
         <div class="pw-strength-bar" id="pw-segs">
@@ -602,7 +602,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </div>
     </div>
 
-    <div id="pw-loading" style="display:none"><div class="loading-msg"><div class="loader"></div>Analyzing with AI...</div></div>
+    <div id="pw-loading" style="display:none"><div class="loading-msg"><div class="loader"></div><span id="pw-loading-el">Analyzing with AI...</span></div></div>
 
     <div id="pw-result" style="display:none">
       <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;margin-bottom:16px">
@@ -625,14 +625,14 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         </div>
         <!-- Crack times -->
         <div class="card" style="padding:20px">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:14px">ESTIMATED CRACK TIME</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:14px" id="pw-crack-title-el">ESTIMATED CRACK TIME</div>
           <div class="pw-crack-grid">
             <div class="pw-crack-box">
-              <div class="lbl">OFFLINE ATTACK (GPU)</div>
+              <div class="lbl" id="pw-offline-lbl-el">OFFLINE ATTACK (GPU)</div>
               <div class="val" id="pw-offline">—</div>
             </div>
             <div class="pw-crack-box">
-              <div class="lbl">ONLINE ATTACK (Rate-limited)</div>
+              <div class="lbl" id="pw-online-lbl-el">ONLINE ATTACK (Rate-limited)</div>
               <div class="val" id="pw-online">—</div>
             </div>
           </div>
@@ -642,11 +642,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <!-- Issues + Suggestions -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div class="card">
-          <div class="card-head"><span>⚠️</span><span class="card-head-title">Issues Found</span></div>
+          <div class="card-head"><span>⚠️</span><span class="card-head-title" id="pw-issues-hd-el">Issues Found</span></div>
           <div style="padding:16px" id="pw-issues"></div>
         </div>
         <div class="card">
-          <div class="card-head"><span>💡</span><span class="card-head-title">Suggestions</span></div>
+          <div class="card-head"><span>💡</span><span class="card-head-title" id="pw-sugs-hd-el">Suggestions</span></div>
           <div style="padding:16px" id="pw-sugs"></div>
         </div>
       </div>
@@ -661,34 +661,34 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <section class="pane z1" id="sec-phish">
   <div style="max-width:860px;margin:0 auto">
     <div style="margin-bottom:28px">
-      <div class="hero-pill" style="animation:none">🕵️ AI PHISHING DETECTOR</div>
+      <div class="hero-pill" style="animation:none" id="ph-pill-el">🕵️ AI PHISHING DETECTOR</div>
       <h2 style="font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;margin:10px 0 8px;letter-spacing:1px">
-        Analyze Any <span style="color:var(--g)">Message or File</span>
+        <span id="ph-h2a-el">Analyze Any</span> <span style="color:var(--g)" id="ph-h2b-el">Message or File</span>
       </h2>
-      <p style="font-size:14px;color:var(--txd);line-height:1.7">Paste a suspicious text, upload a screenshot or document. AI will detect phishing indicators instantly.</p>
+      <p style="font-size:14px;color:var(--txd);line-height:1.7" id="ph-desc-el">Paste a suspicious text, upload a screenshot or document. AI will detect phishing indicators instantly.</p>
     </div>
 
     <div class="card card-top-line" style="margin-bottom:20px">
       <div class="card-pad">
         <!-- Input method tabs -->
         <div style="display:flex;gap:8px;margin-bottom:20px">
-          <button class="nav-pill active" id="phish-tab-text" onclick="switchPhishTab('text')">📝 Paste Text</button>
-          <button class="nav-pill"        id="phish-tab-file" onclick="switchPhishTab('file')">📎 Upload File/Image</button>
+          <button class="nav-pill active" id="phish-tab-text" onclick="switchPhishTab('text')">📝 <span id="ph-tab-text-el">Paste Text</span></button>
+          <button class="nav-pill"        id="phish-tab-file" onclick="switchPhishTab('file')">📎 <span id="ph-tab-file-el">Upload File/Image</span></button>
         </div>
 
         <!-- Text input -->
         <div id="phish-text-area">
-          <label class="flabel">PASTE THE SUSPICIOUS MESSAGE HERE</label>
+          <label class="flabel" id="ph-text-lbl-el">PASTE THE SUSPICIOUS MESSAGE HERE</label>
           <textarea class="finput finput-area" id="phish-text" placeholder="Paste email body, SMS text, WhatsApp message, or any suspicious content here..."></textarea>
         </div>
 
         <!-- File upload -->
         <div id="phish-file-area" style="display:none">
-          <label class="flabel">UPLOAD SCREENSHOT, IMAGE OR DOCUMENT</label>
+          <label class="flabel" id="ph-file-lbl-el">UPLOAD SCREENSHOT, IMAGE OR DOCUMENT</label>
           <div class="upload-zone" id="upload-zone" onclick="document.getElementById('phish-file').click()" ondragover="onDragOver(event)" ondrop="onDrop(event)" ondragleave="onDragLeave(event)">
             <div class="icon">📤</div>
-            <div style="font-size:14px;color:var(--tx);margin-top:6px">Click to upload or drag &amp; drop</div>
-            <p>Supports: JPG, PNG, GIF, WEBP, PDF, TXT, DOC</p>
+            <div style="font-size:14px;color:var(--tx);margin-top:6px" id="ph-upload-title-el">Click to upload or drag &amp; drop</div>
+            <p id="ph-upload-sub-el">Supports: JPG, PNG, GIF, WEBP, PDF, TXT, DOC</p>
           </div>
           <input type="file" id="phish-file" style="display:none" accept="image/*,.pdf,.txt,.doc,.docx" onchange="onFileSelect(event)">
           <div id="file-preview" style="display:none" class="file-preview">
@@ -698,12 +698,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         </div>
 
         <button class="btn-g" onclick="analyzePhishing()" style="margin-top:18px;padding:13px 32px" id="phish-btn">
-          🔍 Analyze for Phishing →
+          <span id="ph-analyze-el">🔍 Analyze for Phishing →</span>
         </button>
       </div>
     </div>
 
-    <div id="phish-loading" style="display:none"><div class="loading-msg"><div class="loader"></div>Analyzing content with AI...</div></div>
+    <div id="phish-loading" style="display:none"><div class="loading-msg"><div class="loader"></div><span id="ph-loading-el">Analyzing content with AI...</span></div></div>
 
     <div id="phish-result" style="display:none">
       <!-- Verdict banner -->
@@ -716,7 +716,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           </div>
           <div style="font-size:13px;color:var(--txd);margin-top:4px" id="ph-summary"></div>
           <div style="margin-top:8px">
-            <span style="font-family:var(--mono);font-size:10px;color:var(--txd)">CONFIDENCE: <span id="ph-conf">0</span>%</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--txd)"><span id="ph-conf-lbl-el">CONFIDENCE</span>: <span id="ph-conf">0</span>%</span>
             <div class="conf-bar-track"><div class="conf-bar-fill" id="ph-conf-bar" style="width:0%"></div></div>
           </div>
         </div>
@@ -724,17 +724,17 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div class="card">
-          <div class="card-head"><span>🚩</span><span class="card-head-title">Red Flags Detected</span></div>
+          <div class="card-head"><span>🚩</span><span class="card-head-title" id="ph-red-hd-el">Red Flags Detected</span></div>
           <div id="ph-red-flags"></div>
         </div>
         <div class="card">
-          <div class="card-head"><span>✅</span><span class="card-head-title">Safe Indicators</span></div>
+          <div class="card-head"><span>✅</span><span class="card-head-title" id="ph-safe-hd-el">Safe Indicators</span></div>
           <div id="ph-safe" style="padding:16px"></div>
         </div>
       </div>
 
       <div class="card" style="margin-top:16px;padding:18px 20px;border-left:3px solid var(--g)">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:6px">RECOMMENDATION</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:6px" id="ph-rec-lbl-el">RECOMMENDATION</div>
         <div style="font-size:14px;color:var(--tx);line-height:1.6" id="ph-rec"></div>
       </div>
     </div>
@@ -748,24 +748,24 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <section class="pane z1" id="sec-url">
   <div style="max-width:860px;margin:0 auto">
     <div style="margin-bottom:28px">
-      <div class="hero-pill" style="animation:none">🌐 WEBSITE SECURITY CHECKER</div>
+      <div class="hero-pill" style="animation:none" id="url-pill-el">🌐 WEBSITE SECURITY CHECKER</div>
       <h2 style="font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;margin:10px 0 8px;letter-spacing:1px">
-        Is This <span style="color:var(--g)">Website Safe?</span>
+        <span id="url-h2a-el">Is This</span> <span style="color:var(--g)" id="url-h2b-el">Website Safe?</span>
       </h2>
-      <p style="font-size:14px;color:var(--txd);line-height:1.7">Enter any URL to get a security analysis powered by AI. Checks for phishing indicators, suspicious domain patterns, and security best practices.</p>
+      <p style="font-size:14px;color:var(--txd);line-height:1.7" id="url-desc-el">Enter any URL to get a security analysis powered by AI. Checks for phishing indicators, suspicious domain patterns, and security best practices.</p>
     </div>
 
     <div class="card card-top-line" style="margin-bottom:20px">
       <div class="card-pad">
-        <label class="flabel">ENTER URL TO ANALYZE</label>
+        <label class="flabel" id="url-input-lbl-el">ENTER URL TO ANALYZE</label>
         <div style="display:flex;gap:10px">
           <input type="url" id="url-input" class="finput" placeholder="https://example.com" style="flex:1">
           <button class="btn-g" onclick="analyzeUrl()" id="url-btn" style="padding:11px 24px;white-space:nowrap">
-            Check →
+            <span id="url-check-el">Check →</span>
           </button>
         </div>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--txd)">Try examples:</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--txd)" id="url-ex-lbl-el">Try examples:</span>
           <a href="#" style="font-family:var(--mono);font-size:10px;color:var(--g);text-decoration:none" onclick="setUrl('https://google.com');return false">google.com</a>
           <a href="#" style="font-family:var(--mono);font-size:10px;color:var(--r);text-decoration:none" onclick="setUrl('http://sbi-unblock.tk/verify');return false">sbi-unblock.tk</a>
           <a href="#" style="font-family:var(--mono);font-size:10px;color:var(--y);text-decoration:none" onclick="setUrl('http://paypa1.com/login');return false">paypa1.com</a>
@@ -773,7 +773,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </div>
     </div>
 
-    <div id="url-loading" style="display:none"><div class="loading-msg"><div class="loader"></div>Analyzing URL security with AI...</div></div>
+    <div id="url-loading" style="display:none"><div class="loading-msg"><div class="loader"></div><span id="url-loading-el">Scanning URL with VirusTotal...</span></div></div>
 
     <div id="url-result" style="display:none">
       <div class="card card-top-line" style="margin-bottom:16px;overflow:hidden">
@@ -781,7 +781,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <div class="url-verdict">
           <div class="risk-circle" id="risk-circle">
             <div class="score" id="risk-score">0</div>
-            <div class="lbl">RISK</div>
+            <div class="lbl" id="url-risk-lbl-el">RISK</div>
           </div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
@@ -817,7 +817,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
       <div class="card" style="padding:18px 20px;border-left:3px solid var(--g)">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:6px">RECOMMENDATION</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--txd);letter-spacing:2px;margin-bottom:6px" id="url-rec-lbl-el">RECOMMENDATION</div>
         <div style="font-size:14px;color:var(--tx);line-height:1.6" id="url-rec"></div>
       </div>
     </div>
@@ -831,9 +831,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <section class="pane z1" id="sec-scores">
   <div id="scores-logged-out" style="text-align:center;padding:60px 20px">
     <div style="font-size:48px;margin-bottom:16px">🔐</div>
-    <div style="font-family:var(--disp);font-size:24px;color:#fff;margin-bottom:8px">Log in to see your scores</div>
-    <div style="font-family:var(--mono);font-size:13px;color:var(--txd);margin-bottom:22px">Your quiz results are saved when you're logged in</div>
-    <button class="btn-g" onclick="openModal()">Login / Register</button>
+    <div style="font-family:var(--disp);font-size:24px;color:#fff;margin-bottom:8px" id="sc-lo-title-el">Log in to see your scores</div>
+    <div style="font-family:var(--mono);font-size:13px;color:var(--txd);margin-bottom:22px" id="sc-lo-sub-el">Your quiz results are saved when you're logged in</div>
+    <button class="btn-g" id="sc-lo-btn-el" onclick="openModal()">Login / Register</button>
   </div>
 
   <div id="scores-content" style="display:none">
@@ -844,27 +844,31 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <div class="profile-uname" id="profile-uname">@---</div>
         <div class="profile-stat">
           <span class="profile-stat-v" id="profile-best">—</span>
-          <div class="profile-stat-l">BEST ACCURACY</div>
+          <div class="profile-stat-l" id="profile-best-lbl-el">BEST ACCURACY</div>
         </div>
         <div class="profile-stat" style="margin-top:8px">
           <span class="profile-stat-v" id="profile-games">0</span>
-          <div class="profile-stat-l">GAMES PLAYED</div>
+          <div class="profile-stat-l" id="profile-games-lbl-el">GAMES PLAYED</div>
         </div>
         <button class="btn-ghost btn-full" id="logout-btn-el" style="margin-top:16px" onclick="logoutUser()">🚪 Logout</button>
       </div>
       <div>
         <div style="font-family:var(--disp);font-size:22px;font-weight:600;color:#fff;margin-bottom:16px;letter-spacing:1px" id="sc-hist-title-el">📊 Score History</div>
         <div class="card">
-          <div id="scores-loading" class="loading-msg" style="display:none"><div class="loader"></div>Loading scores...</div>
+          <div id="scores-loading" class="loading-msg" style="display:none"><div class="loader"></div><span id="sc-loading-el">Loading scores...</span></div>
           <div id="scores-table-wrap" style="overflow-x:auto">
             <table class="score-table" id="scores-table">
               <thead><tr>
-                <th>#</th><th>DATE</th><th>DIFFICULTY</th><th>SCORE</th><th>ACCURACY</th>
+                <th id="sc-th1-el">#</th>
+                <th id="sc-th2-el">DATE</th>
+                <th id="sc-th3-el">DIFFICULTY</th>
+                <th id="sc-th4-el">SCORE</th>
+                <th id="sc-th5-el">ACCURACY</th>
               </tr></thead>
               <tbody id="scores-tbody"></tbody>
             </table>
           </div>
-          <div id="scores-empty" style="text-align:center;padding:40px;font-family:var(--mono);font-size:12px;color:var(--txd);display:none">
+          <div id="scores-empty" style="text-align:center;padding:40px;font-family:var(--mono);font-size:12px;color:var(--txd);display:none" id="sc-empty-el">
             No scores yet. Play a quiz to see your history!
           </div>
         </div>
@@ -1749,66 +1753,152 @@ function analyzeUrl() {
 
 // =============================================
 // MULTI-LANGUAGE TRANSLATION SYSTEM
-// Uses AI API via Flask /api/translate
+// Uses Groq API via Flask /api/translate
 // =============================================
 
 var currentLang = 'English';
 var translationCache = {};
 
-// All English strings — key matches element id map below
+// ALL English strings — key = element ID in the DOM
 var UI_STRINGS = {
-    'logo-tag-el':      'CYBER AWARENESS TRAINER v2.0',
-    'tab-quiz':         '🎮 Quiz',
-    'tab-pw':           '🔑 Password Checker',
-    'tab-phish':        '🕵️ Phishing Detector',
-    'tab-url':          '🌐 URL Safety',
-    'tab-scores':       '📊 My Scores',
-    'hero-pill-el':     '🔐 AI-POWERED PHISHING TRAINING',
-    'hero-h1-line1':    'Can you spot a',
-    'hero-h1-line2':    'phishing',
-    'hero-h1-line3':    'scam?',
-    'hero-desc-el':     'AI generates fresh, realistic messages every time you play. Build real scam-resistance before it costs you.',
-    'hchip-ai-el':      'GENERATED',
-    'hchip-ch-el':      'CHANNELS',
-    'hchip-uq-el':      'UNIQUE QUESTIONS',
-    'hchip-dl-el':      'DIFFICULTY LEVELS',
-    'sc-title-el':      'Configure Your Training',
-    'sc-name-lbl-el':   'YOUR NAME',
-    'sc-count-lbl-el':  'NUMBER OF QUESTIONS (1–20)',
-    'sc-diff-lbl-el':   'DIFFICULTY',
-    'dpill-easy-el':    '🟢 Easy',
-    'dpill-med-el':     '🟡 Medium',
-    'dpill-hard-el':    '🔴 Hard',
-    'start-btn':        'START TRAINING →',
-    'sc-footer-el':     'Questions generated by AI — unique every session',
-    'hnum-correct-el':  'CORRECT',
-    'hnum-missed-el':   'MISSED',
-    'hnum-streak-el':   'STREAK 🔥',
-    'abtn-p-el':        '☠️ PHISHING',
-    'abtn-l-el':        '✅ LEGITIMATE',
-    'rf-title-el':      '🔍 Red Flags',
-    'rf1-el':           'Urgency: "Act NOW!", "24 hrs left"',
-    'rf2-el':           'Links not matching the official site',
-    'rf3-el':           'Grammar mistakes and typos',
-    'rf4-el':           'Asking for OTP, PIN or card details',
-    'rf5-el':           'Fake sender IDs like sbi@gmail.com',
-    'rf6-el':           'Too-good-to-be-true offers',
-    'rf7-el':           'Threats if you don\'t respond',
-    'log-title-el':     '📋 Answer Log',
-    'f-replay-el':      '🔄 Play Again',
-    'f-scores-el':      '📊 View Scores',
-    'sc-hist-title-el': '📊 Score History',
-    'logout-btn-el':    '🚪 Logout'
+    // header
+    'logo-tag-el':        'CYBER AWARENESS TRAINER v2.0',
+
+    // tab nav
+    'tab-quiz':           '🎮 Quiz',
+    'tab-pw':             '🔑 Password Checker',
+    'tab-phish':          '🕵️ Phishing Detector',
+    'tab-url':            '🌐 URL Safety',
+    'tab-scores':         '📊 My Scores',
+
+    // quiz hero
+    'hero-pill-el':       '🔐 AI-POWERED PHISHING TRAINING',
+    'hero-h1-line1':      'Can you spot a',
+    'hero-h1-line2':      'phishing',
+    'hero-h1-line3':      'scam?',
+    'hero-desc-el':       'AI generates fresh, realistic messages every time you play. Build real scam-resistance before it costs you.',
+    'hchip-ai-el':        'GENERATED',
+    'hchip-ch-el':        'CHANNELS',
+    'hchip-uq-el':        'UNIQUE QUESTIONS',
+    'hchip-dl-el':        'DIFFICULTY LEVELS',
+
+    // start card
+    'sc-title-el':        'Configure Your Training',
+    'sc-name-lbl-el':     'YOUR NAME',
+    'sc-count-lbl-el':    'NUMBER OF QUESTIONS (1–20)',
+    'sc-diff-lbl-el':     'DIFFICULTY',
+    'dpill-easy-el':      '🟢 Easy',
+    'dpill-med-el':       '🟡 Medium',
+    'dpill-hard-el':      '🔴 Hard',
+    'start-btn':          'START TRAINING →',
+    'sc-footer-el':       'Questions generated by AI — unique every session',
+
+    // quiz loading
+    'quiz-loading-el':    'Generating questions with AI...',
+    'quiz-loading-sub-el':'This takes 5–10 seconds',
+
+    // HUD
+    'hnum-correct-el':    'CORRECT',
+    'hnum-missed-el':     'MISSED',
+    'hnum-streak-el':     'STREAK 🔥',
+
+    // answer buttons + next
+    'abtn-p-el':          '☠️ PHISHING',
+    'abtn-l-el':          '✅ LEGITIMATE',
+
+    // sidebar
+    'rf-title-el':        '🔍 Red Flags',
+    'rf1-el':             'Urgency: "Act NOW!", "24 hrs left"',
+    'rf2-el':             'Links not matching the official site',
+    'rf3-el':             'Grammar mistakes and typos',
+    'rf4-el':             'Asking for OTP, PIN or card details',
+    'rf5-el':             'Fake sender IDs like sbi@gmail.com',
+    'rf6-el':             'Too-good-to-be-true offers',
+    'rf7-el':             'Threats if you don\'t respond',
+    'log-title-el':       '📋 Answer Log',
+    'log-empty-el':       'No answers yet...',
+
+    // final screen
+    'f-replay-el':        '🔄 Play Again',
+    'f-scores-el':        '📊 View Scores',
+
+    // password checker
+    'pw-pill-el':         '🔑 PASSWORD STRENGTH ANALYZER',
+    'pw-h2a-el':          'How',
+    'pw-h2b-el':          'Strong',
+    'pw-h2c-el':          'Is Your Password?',
+    'pw-desc-el':         'Powered by AI. Get a detailed analysis of your password strength, estimated crack times, and actionable improvement tips.',
+    'pw-input-lbl-el':    'ENTER PASSWORD TO ANALYZE',
+    'pw-show-el':         'Show',
+    'pw-analyze-el':      'Analyze →',
+    'pw-loading-el':      'Analyzing with AI...',
+    'pw-crack-title-el':  'ESTIMATED CRACK TIME',
+    'pw-offline-lbl-el':  'OFFLINE ATTACK (GPU)',
+    'pw-online-lbl-el':   'ONLINE ATTACK (Rate-limited)',
+    'pw-issues-hd-el':    'Issues Found',
+    'pw-sugs-hd-el':      'Suggestions',
+
+    // phishing detector
+    'ph-pill-el':         '🕵️ AI PHISHING DETECTOR',
+    'ph-h2a-el':          'Analyze Any',
+    'ph-h2b-el':          'Message or File',
+    'ph-desc-el':         'Paste a suspicious text, upload a screenshot or document. AI will detect phishing indicators instantly.',
+    'ph-tab-text-el':     'Paste Text',
+    'ph-tab-file-el':     'Upload File/Image',
+    'ph-text-lbl-el':     'PASTE THE SUSPICIOUS MESSAGE HERE',
+    'ph-file-lbl-el':     'UPLOAD SCREENSHOT, IMAGE OR DOCUMENT',
+    'ph-upload-title-el': 'Click to upload or drag & drop',
+    'ph-upload-sub-el':   'Supports: JPG, PNG, GIF, WEBP, PDF, TXT, DOC',
+    'ph-analyze-el':      '🔍 Analyze for Phishing →',
+    'ph-loading-el':      'Analyzing content with AI...',
+    'ph-conf-lbl-el':     'CONFIDENCE',
+    'ph-red-hd-el':       'Red Flags Detected',
+    'ph-safe-hd-el':      'Safe Indicators',
+    'ph-rec-lbl-el':      'RECOMMENDATION',
+
+    // URL safety
+    'url-pill-el':        '🌐 WEBSITE SECURITY CHECKER',
+    'url-h2a-el':         'Is This',
+    'url-h2b-el':         'Website Safe?',
+    'url-desc-el':        'Enter any URL to get a security analysis powered by AI. Checks for phishing indicators, suspicious domain patterns, and security best practices.',
+    'url-input-lbl-el':   'ENTER URL TO ANALYZE',
+    'url-check-el':       'Check →',
+    'url-ex-lbl-el':      'Try examples:',
+    'url-loading-el':     'Scanning URL with VirusTotal...',
+    'url-risk-lbl-el':    'RISK',
+    'url-rec-lbl-el':     'RECOMMENDATION',
+
+    // scores section - logged out
+    'sc-lo-title-el':     'Log in to see your scores',
+    'sc-lo-sub-el':       'Your quiz results are saved when you\'re logged in',
+    'sc-lo-btn-el':       'Login / Register',
+
+    // scores section - logged in
+    'sc-hist-title-el':   '📊 Score History',
+    'profile-best-lbl-el':'BEST ACCURACY',
+    'profile-games-lbl-el':'GAMES PLAYED',
+    'logout-btn-el':      '🚪 Logout',
+    'sc-loading-el':      'Loading scores...',
+    'sc-th1-el':          '#',
+    'sc-th2-el':          'DATE',
+    'sc-th3-el':          'DIFFICULTY',
+    'sc-th4-el':          'SCORE',
+    'sc-th5-el':          'ACCURACY',
+
+    // modal
+    'mt-login':           'Login',
+    'mt-register':        'Register',
+    'login-btn':          'Login →',
+    'reg-btn':            'Create Account →'
 };
 
-// ── LANGUAGE MENU TOGGLE ─────────────────────
+// ── LANGUAGE MENU ─────────────────────────────
 
 function toggleLangMenu() {
     var m = document.getElementById('lang-menu');
     m.style.display = m.style.display === 'none' ? 'block' : 'none';
 }
 
-// close menu when clicking outside
 document.addEventListener('click', function(e) {
     var wrap = document.getElementById('lang-wrap');
     if (wrap && !wrap.contains(e.target)) {
@@ -1816,26 +1906,22 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ── SET LANGUAGE ─────────────────────────────
+// ── SET LANGUAGE ──────────────────────────────
 
 function setLang(language, flag) {
     document.getElementById('lang-menu').style.display = 'none';
-
     if (language === currentLang) return;
 
-    // English = just restore originals, no API needed
     if (language === 'English') {
         currentLang = 'English';
         document.getElementById('lang-label').innerHTML = flag + ' English';
         applyTranslation(UI_STRINGS);
-        // restore hero h1 properly
         var h1 = document.getElementById('hero-h1-el');
         if (h1) h1.innerHTML = 'Can you spot a<br><em>phishing</em> scam?';
         document.body.setAttribute('dir', 'ltr');
         return;
     }
 
-    // check cache — no API call if already translated
     if (translationCache[language]) {
         currentLang = language;
         document.getElementById('lang-label').innerHTML = flag + ' ' + language;
@@ -1843,7 +1929,6 @@ function setLang(language, flag) {
         return;
     }
 
-    // show loading overlay
     document.getElementById('translate-overlay').classList.add('on');
     document.getElementById('tl-progress').innerHTML = 'Translating to ' + language + '...';
 
@@ -1851,7 +1936,7 @@ function setLang(language, flag) {
     xhr.open('POST', '/api/translate', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.withCredentials = true;
-    xhr.timeout = 30000;
+    xhr.timeout = 40000;
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
@@ -1864,7 +1949,7 @@ function setLang(language, flag) {
                     translationCache[language] = d.translated;
                     applyTranslation(d.translated);
                 } else {
-                    alert('Translation error: ' + (d.error || 'Unknown error. Try again.'));
+                    alert('Translation error: ' + (d.error || 'Unknown error'));
                 }
             } catch(e) {
                 alert('Translation failed. Check Flask terminal.');
@@ -1886,25 +1971,28 @@ function setLang(language, flag) {
     xhr.send(JSON.stringify({texts: UI_STRINGS, language: language}));
 }
 
-// ── APPLY TRANSLATION TO DOM ─────────────────
+// ── APPLY TRANSLATION ─────────────────────────
 
 function applyTranslation(translated) {
-    // update all direct text elements
+    // update all direct element IDs
     for (var key in translated) {
         if (key === 'hero-h1-line1' || key === 'hero-h1-line2' || key === 'hero-h1-line3') continue;
         var el = document.getElementById(key);
         if (el) el.innerHTML = translated[key];
     }
 
-    // handle hero h1 specially (has em tag inside)
+    // hero h1 special rebuild
     var h1 = document.getElementById('hero-h1-el');
     if (h1 && translated['hero-h1-line1'] && translated['hero-h1-line2'] && translated['hero-h1-line3']) {
         h1.innerHTML = translated['hero-h1-line1'] + '<br><em>' +
-            translated['hero-h1-line2'] + '</em> ' +
-            translated['hero-h1-line3'];
+            translated['hero-h1-line2'] + '</em> ' + translated['hero-h1-line3'];
     }
 
-    // RTL for Arabic
+    // phishing textarea placeholder
+    var ta = document.getElementById('phish-text');
+    if (ta && translated['ph-text-ph']) ta.placeholder = translated['ph-text-ph'];
+
+    // RTL support for Arabic
     document.body.setAttribute('dir', currentLang === 'Arabic' ? 'rtl' : 'ltr');
 }
 
